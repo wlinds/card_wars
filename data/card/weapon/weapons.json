@@ -1,0 +1,10 @@
+[
+    {
+      "card_type": "weapon",
+      "name": "War Axe",
+      "description": "Sturdy and reliable.",
+      "mana_cost": 2,
+      "attack": 3,
+      "durability": 2
+    }
+]

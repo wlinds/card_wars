@@ -1,0 +1,22 @@
+[
+    {
+      "card_type": "spell",
+      "name": "Fire Blast",
+      "description": "A furious fireball.",
+      "mana_cost": 2,
+      "spell_type": "Fire",
+      "target": 0,
+      "damage": 6
+    },
+
+    {
+      "card_type": "spell",
+      "name": "Frost Nova",
+      "description": "AoE.",
+      "mana_cost": 4,
+      "spell_type": "Frost",
+      "target": 1,
+      "damage": 2
+
+    }
+]
