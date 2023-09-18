@@ -3,7 +3,7 @@ import json
 from src.card_wars import card
 
 
-def read_minion_cards_from(json_file_path):
+def read_cards_from(json_file_path):
     card_list = []
 
     try:
@@ -22,6 +22,27 @@ def read_minion_cards_from(json_file_path):
                     )
                     card_list.append(minion_card)
 
+                if card_data.get("card_type") == "weapon":
+                    weapon_card = card.Weapon(
+                        name=card_data["name"],
+                        description=card_data["description"],
+                        mana_cost=card_data["mana_cost"],
+                        attack=card_data["attack"],
+                        durability=card_data["durability"],
+                    )
+                    card_list.append(weapon_card)
+
+                elif card_data.get("card_type") == "spell":
+                    spell_card = card.Spell(
+                        name=card_data["name"],
+                        description=card_data["description"],
+                        mana_cost=card_data["mana_cost"],
+                        spell_type=card_data["spell_type"],
+                        target=card_data["target"],
+                        damage=card_data["damage"],
+                    )
+                    card_list.append(spell_card)
+
     except FileNotFoundError:
         print(f"File not found: {json_file_path}")
 
@@ -29,9 +50,9 @@ def read_minion_cards_from(json_file_path):
 
 
 if __name__ == "__main__":
-    minion_cards = read_minion_cards_from("data/card/minion/minions.json")
+    cards = read_cards_from("data/card/minion/minions.json")
+    cards.extend(read_cards_from("data/card/weapon/weapons.json"))
+    cards.extend(read_cards_from("data/card/spell/spells.json"))
 
-    for card in minion_cards:
+    for card in cards:
         print(card)
-
-    print("hi")
