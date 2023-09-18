@@ -1,0 +1,5 @@
+black
+isort
+pandas
+numpy
+pre-commit
