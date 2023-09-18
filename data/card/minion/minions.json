@@ -1,0 +1,23 @@
+[
+    {
+      "card_type": "minion",
+      "name": "Goblin",
+      "description": "A small creature with a funky smell.",
+      "mana_cost": 1,
+      "attack": 2,
+      "health": 2,
+      "race": "Goblin"
+    },
+
+    {
+      "card_type": "minion",
+      "name": "Bobblin The Goblin",
+      "description": "A fierce Goblin.",
+      "mana_cost": 3,
+      "attack": 4,
+      "health": 3,
+      "race": "Goblin",
+      "ability": "Rush"
+
+    }
+]
