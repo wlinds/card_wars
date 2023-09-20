@@ -44,10 +44,10 @@ def cast_spell(player, card_id):
 
     # Wild Growth
     if card_id == "s02":
-        if player.mana >= 0:
-            player.mana += 2
+        if player.mana_bar >= 0:
+            player.mana_bar += 2  # TODO: Handle case when result is >10
             print(
-                f"{player.name} cast 'Wild Growth' and increased their mana by 2. New mana: {player.mana}"
+                f"{player.name} cast 'Wild Growth' and increased their mana bar by 2. New mana: {player.mana_bar}"
             )
         else:
             print(f"{player.name} does not have enough mana to cast 'Wild Growth'.")
