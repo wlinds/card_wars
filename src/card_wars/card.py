@@ -30,11 +30,34 @@ class Weapon(Card):
     durability: int
 
 
+# ----- Spell logic ----- #
+
+# This should probably be replaced by a more general function TODO: Add target
+
+
+def cast_spell(player, card_id):
+    """
+    player: The player object to apply the spell to.
+    player_num: 1 or 2 to indicate which player casts the spell.
+    card_id: id of the spell
+    """
+
+    # Wild Growth
+    if card_id == "s02":
+        if player.mana >= 0:
+            player.mana += 2
+            print(
+                f"{player.name} cast 'Wild Growth' and increased their mana by 2. New mana: {player.mana}"
+            )
+        else:
+            print(f"{player.name} does not have enough mana to cast 'Wild Growth'.")
+
+
 if __name__ == "__main__":
-    boblin = Minion("Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
+    boblin = Minion("id", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
     print(boblin.name, " - ", boblin.description)
 
-    fire_blast = Spell("Fire Blast", "A burst of fire.", 2, "Fire", 0, 6)
+    fire_blast = Spell("id", "Fire Blast", "A burst of fire.", 2, "Fire", 0, 6)
     print(f"{fire_blast.mana_cost=}")
 
-    small_shiv = Weapon("Small Shiv", "Crafted from scraps.", 3, 3, 2)
+    small_shiv = Weapon("id", "Small Shiv", "Crafted from scraps.", 3, 3, 2)
