@@ -45,10 +45,10 @@ def get_test_deck(deck_type: str = "goblin"):
     test_deck = Deck()
     if deck_type == "goblin":
         test_deck.fill_with_card(
-            Minion("Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
+            Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
         )
     elif deck_type == "gnome":
-        test_deck.fill_with_card(Minion("Gnome", "A tiny fuckwit.", 1, 1, 2, "Gnome"))
+        test_deck.fill_with_card(Minion("no_id", "Gnome", "A tiny fuckwit.", 1, 1, 2, "Gnome"))
     else:
         print('Invalid parameter. Try "goblin" or "gnome".')
         return

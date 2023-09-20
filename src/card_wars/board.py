@@ -2,7 +2,7 @@ import random
 from dataclasses import dataclass, field
 from typing import List
 
-from card_wars.card import Card
+from card_wars.card import Card, Minion, Spell, cast_spell
 from card_wars.deck import Deck, get_test_deck
 from card_wars.player import Player
 
@@ -34,9 +34,15 @@ class Board:
         if player.deck.cards:
             drawn_card = player.deck.draw_card()
             player_hand.append(drawn_card)
-            print(
-                f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health}] Mana: {drawn_card.mana_cost}"
-            )
+
+            if isinstance(drawn_card, Minion):
+                print(
+                    f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health}] Mana cost: {drawn_card.mana_cost}"
+                )
+            if isinstance(drawn_card, Spell):
+                print(
+                    f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}"
+                )
         else:
             print(f"Player {player_num} has no cards left in their deck.")
 
@@ -59,13 +65,17 @@ class Board:
             return
 
         card_to_play = player_hand[card_index]
-        player_field.append(card_to_play)
-        del player_hand[card_index]
 
-        print(
-            f"[+] Player {player_num} played: {card_to_play.name} "
-            f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
-        )
+        if isinstance(card_to_play, Minion):
+            player_field.append(card_to_play)
+            del player_hand[card_index]
+
+            print(
+                f"[+] Player {player_num} played: {card_to_play.name} "
+                f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
+            )
+        elif isinstance(card_to_play, Spell):
+            cast_spell(player, card_to_play.card_id)
 
     def attack_phase(self):
         """
@@ -99,6 +109,12 @@ class Board:
             self.player1.health -= player2_damage  # Player 1's minions deal damage to Player 2
 
         self.game_turn += 1
+
+        if self.player1.mana < 10:
+            self.player1.mana += 1
+
+        if self.player2.mana < 10:
+            self.player2.mana += 1
 
     def attack_player_minions(self, player_num, target_player_num):
         """
@@ -144,9 +160,9 @@ class Board:
 
     def __str__(self):
         board_str = f"Board State (Turn {self.game_turn}):\n"
-        board_str += f"Player 1 Health: {self.player1.health}"
+        board_str += f"Player 1: {self.player1.health}/30 HP | {self.player1.mana} Mana "
         board_str += " " * 60
-        board_str += f"Player 2 Health: {self.player2.health}\n"
+        board_str += f"Player 2: {self.player2.health}/30 HP | {self.player2.mana} Mana \n"
         board_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards\n"
         board_str += f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
         board_str += f"Player 1 Hand: {len(self.player1_hand)} cards\n"
@@ -178,7 +194,16 @@ if __name__ == "__main__":
     board.play_card(1, 0)
     board.play_card(1, 0)
 
+    # Player 2 plays 3 cards
+    board.play_card(2, 0)
+    board.play_card(2, 0)
+    board.play_card(2, 0)
+
     # print(board)
+
+    board.attack_phase()
+
+    print(board)
 
     board.attack_phase()
 

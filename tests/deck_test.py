@@ -20,7 +20,9 @@ if __name__ == "__main__":
             deck.add_card(card)
 
     # Fill rest of deck with copies of same card
-    deck.fill_with_card(Minion("Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin"))
+    deck.fill_with_card(
+        Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
+    )
 
     print(deck)
 
@@ -37,4 +39,14 @@ if __name__ == "__main__":
         if drawn_card:
             print(f"Drawn Card: {drawn_card}")
 
-        print(deck)
+    #     print(deck)
+
+    deck2 = Deck("Deck 2")
+    deck2.add_card(
+        Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
+    )
+    deck2.fill_with_card(
+        Spell("s02", "Wild Growth", "Increases player mana by 2", 0, "nature", 4, 0)
+    )
+
+    print(deck2)
