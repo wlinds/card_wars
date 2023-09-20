@@ -21,5 +21,17 @@
       "race": "Goblin",
       "ability": "Rush"
 
+    },
+
+    {
+      "card_id": "m02",
+      "card_type": "minion",
+      "name": "Gnome",
+      "description": "A tiny fuckwit.",
+      "mana_cost": 1,
+      "attack": 1,
+      "health": 1,
+      "race": "Gnome"
+
     }
 ]

@@ -9,4 +9,4 @@ if __name__ == "__main__":
     cards.extend(read_cards_from("data/card/spell/spells.json"))
 
     for card in cards:
-        print(card)
+        print(card.card_id, card.name)
