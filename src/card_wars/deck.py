@@ -41,5 +41,14 @@ class Deck:
         return deck_str
 
 
+def get_goblin_test_deck():
+    test_deck = Deck()
+    test_deck.fill_with_card(
+        Minion("Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
+    )
+
+    return test_deck
+
+
 if __name__ == "__main__":
     pass
