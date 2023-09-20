@@ -3,8 +3,7 @@ import random
 from dataclasses import dataclass, field
 from typing import List
 
-from src.card_wars.card import *
-from src.card_wars.import_cards import read_cards_from
+from card_wars.card import *
 
 
 @dataclass

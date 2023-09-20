@@ -1,7 +1,7 @@
 import json
 
-from src.card_wars import card
-from src.card_wars.import_cards import read_cards_from
+from card_wars import card
+from card_wars.import_cards import read_cards_from
 
 if __name__ == "__main__":
     cards = read_cards_from("data/card/minion/minions.json")

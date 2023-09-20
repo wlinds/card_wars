@@ -1,6 +1,6 @@
 import json
 
-from src.card_wars.card import Minion, Spell, Weapon
+from card_wars.card import Minion, Spell, Weapon
 
 
 def read_cards_from(json_file_path):
