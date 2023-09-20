@@ -1,18 +1,14 @@
 from card_wars.board import Board
 from card_wars.card import Minion, Spell, Weapon
 from card_wars.deck import Deck, get_test_deck
+from card_wars.import_cards import find_card
 from card_wars.player import Player
 
 if __name__ == "__main__":
     player1_deck = Deck("mana_storm")  # Create empty deck
 
-    # Add one goblin, fill the rest of deck with Wild growth spell
-    player1_deck.add_card(
-        Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
-    )
-    player1_deck.fill_with_card(
-        Spell("s02", "Wild Growth", "Increases player mana by 2", 0, "nature", 4, 0)
-    )
+    player1_deck.add_card(find_card("m00"))  # Add one Goblin Minion
+    player1_deck.fill_with_card(find_card("s02"))  # Fill the rest of deck with Wild Growth Spell
 
     player2_deck = get_test_deck("gnome")  # Get gnome deck for Player 2
 
