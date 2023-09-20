@@ -50,3 +50,29 @@ def read_cards_from(json_file_path):
         print(f"File not found: {json_file_path}")
 
     return card_list
+
+
+def find_card(card_id=str):
+    """
+    Find card by search term (card_id) or card_name
+    TODO: searching for card_name needs improvements (implement spell check, ignore capital letters etc)
+    """
+    cards = read_cards_from("data/card/minion/minions.json")
+    cards.extend(read_cards_from("data/card/weapon/weapons.json"))
+    cards.extend(read_cards_from("data/card/spell/spells.json"))
+
+    for card in cards:
+        if card.card_id == card_id or card.name == card_id:
+            print(f"{card.name} found.")
+            return card
+    print(f"Error: {card_id=} not found. Check import_cards and path.")
+    return
+
+
+if __name__ == "__main__":
+    search_by_id = find_card("m00")
+    print(search_by_id)
+    print(type(search_by_id))
+
+    search_by_name = find_card("Goblin")
+    print(search_by_name)
