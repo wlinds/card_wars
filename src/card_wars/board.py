@@ -67,16 +67,27 @@ class Board:
 
         card_to_play = player_hand[card_index]
 
-        if isinstance(card_to_play, Minion):
-            player_field.append(card_to_play)
-            del player_hand[card_index]
+        # Check if player has enough active_mana to play card
+        if player.active_mana >= card_to_play.mana_cost:
+            if isinstance(card_to_play, Minion):
+                player_field.append(card_to_play)
+                del player_hand[card_index]
 
-            print(
-                f"[+] Player {player_num} played: {card_to_play.name} "
-                f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
-            )
-        elif isinstance(card_to_play, Spell or Weapon):
-            cast_spell(player, card_to_play.card_id)
+                # Deduct mana cost from active_mana
+                player.active_mana -= card_to_play.mana_cost
+
+                print(
+                    f"[+] Player {player_num} played: {card_to_play.name} "
+                    f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
+                )
+            elif isinstance(card_to_play, Spell):
+                cast_spell(player, card_to_play.card_id)
+
+            elif isinstance(card_to_play, Weapon):
+                print("TODO: Implement equip weapon logic")
+                pass
+        else:
+            print(f"Not enough mana to play {card_to_play.name}.")
 
     def attack_phase(self):
         """
@@ -88,10 +99,6 @@ class Board:
 
         # Player 2 attacks Player 1's minions
         self.attack_player_minions(player_num=2, target_player_num=1)
-
-        # Check for minion deaths and remove them from the field
-        self.remove_dead_minions(player_num=1)
-        self.remove_dead_minions(player_num=2)
 
         # Calculate total attack damage from remaining minions on the field
         player1_damage = sum(minion.attack for minion in self.player1_field)
@@ -111,11 +118,14 @@ class Board:
 
         self.game_turn += 1
 
-        if self.player1.mana < 10:
-            self.player1.mana += 1
+        if self.player1.mana_bar < self.player1.max_mana_bar:
+            self.player1.mana_bar += 1
 
-        if self.player2.mana < 10:
-            self.player2.mana += 1
+        if self.player2.mana_bar < self.player2.max_mana_bar:
+            self.player2.mana_bar += 1
+
+        self.player1.update_active_mana()
+        self.player2.update_active_mana()
 
     def attack_player_minions(self, player_num, target_player_num):
         """
@@ -141,6 +151,9 @@ class Board:
                 attacking_minion.health -= target_minion.attack
                 target_minion.health -= attacking_minion.attack
 
+                self.remove_dead_minions(1)
+                self.remove_dead_minions(2)
+
     def remove_dead_minions(self, player_num):
         """
         Remove dead minions (health <= 0) from the player's field.
@@ -161,9 +174,9 @@ class Board:
 
     def __str__(self):
         board_str = f"Board State (Turn {self.game_turn}):\n"
-        board_str += f"Player 1: {self.player1.health}/30 HP | {self.player1.mana} Mana "
+        board_str += f"Player 1: {self.player1.health}/30 HP | {self.player1.mana_bar} Mana "
         board_str += " " * 60
-        board_str += f"Player 2: {self.player2.health}/30 HP | {self.player2.mana} Mana \n"
+        board_str += f"Player 2: {self.player2.health}/30 HP | {self.player2.mana_bar} Mana \n"
         board_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards\n"
         board_str += f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
         board_str += f"Player 1 Hand: {len(self.player1_hand)} cards\n"
@@ -205,6 +218,26 @@ if __name__ == "__main__":
     board.attack_phase()
 
     print(board)
+    print(board.player1.active_mana)
+
+    board.attack_phase()
+
+    print(board.player1.active_mana)
+
+    print(board)
+
+    print(board.player1.active_mana)
+    print(board.player1.mana_bar)
+
+    # Player 1 plays 3 cards
+    board.play_card(1, 0)
+    board.play_card(1, 0)
+    board.play_card(1, 0)
+
+    # Player 2 plays 3 cards
+    board.play_card(2, 0)
+    board.play_card(2, 0)
+    board.play_card(2, 0)
 
     board.attack_phase()
 
