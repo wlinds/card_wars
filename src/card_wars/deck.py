@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from card_wars.card import *
+from card_wars.import_cards import find_card, get_all_cards, read_cards_from
 
 
 @dataclass
@@ -41,14 +42,19 @@ class Deck:
         return deck_str
 
 
-def get_test_deck(deck_type: str = "goblin"):
+def get_test_deck(deck_type: str = "goblin") -> Deck:
     test_deck = Deck()
     if deck_type == "goblin":
-        test_deck.fill_with_card(
-            Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
-        )
+        test_deck.fill_with_card(find_card("m00"))
+
     elif deck_type == "gnome":
-        test_deck.fill_with_card(Minion("no_id", "Gnome", "A tiny fuckwit.", 1, 1, 2, "Gnome"))
+        test_deck.fill_with_card(find_card("m02"))
+
+    elif deck_type == "random":
+        all_cards_list = get_all_cards()
+        for i in range(test_deck.card_limit):
+            test_deck.add_card(all_cards_list[random.randint(0, len(all_cards_list) - 1)])
+
     else:
         print('Invalid parameter. Try "goblin" or "gnome".')
         return
@@ -57,4 +63,7 @@ def get_test_deck(deck_type: str = "goblin"):
 
 
 if __name__ == "__main__":
-    pass
+    goblin_deck = get_test_deck("goblin")
+    gnome_deck = get_test_deck("goblin")
+    random_deck = get_test_deck("random")
+    print(random_deck)
