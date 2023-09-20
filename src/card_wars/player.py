@@ -10,11 +10,10 @@ from card_wars.deck import Deck
 class Player:
     name: str = f"P{random.randint(0,9)}"
     health: int = 30
-    mana: int = 0
+    mana_bar: int = 0  # Total mana
+    max_mana_bar: int = 10
+    active_mana: int = 0  # Disposable mana
     deck: Deck = Deck()
-    hand: List[Card] = field(
-        default_factory=list
-    )  # Maybe remove hand and hand size here and only use hand in Board class?
     max_hand_size: int = 10
     hero_power: str = None
 
@@ -24,6 +23,10 @@ class Player:
         self.name = self.name.replace(".", "")
         self.name = self.name.replace(",", "")
         self.name = self.name.replace(" ", "_")
+
+    def update_active_mana(self):
+        """Should be called at the beginning of each turn."""
+        self.active_mana = self.mana_bar
 
 
 if __name__ == "__main__":
