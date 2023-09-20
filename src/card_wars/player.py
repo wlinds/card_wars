@@ -12,20 +12,20 @@ class Player:
     health: int = 30
     mana: int = 0
     deck: Deck = Deck()
-    hand: List[Card] = field(default_factory=list)
+    hand: List[Card] = field(
+        default_factory=list
+    )  # Maybe remove hand and hand size here and only use hand in Board class?
     max_hand_size: int = 10
     hero_power: str = None
 
-    def draw_card(self):
-        if len(self.hand) < self.max_hand_size:
-            card = self.deck.draw_card()
-            if card:
-                self.hand.append(card)
-        else:
-            print("Hand is full. Cannot draw more cards.")
+    def __post_init__(self):
+        # Format name
+        self.name = self.name.strip()
+        self.name = self.name.replace(".", "")
+        self.name = self.name.replace(",", "")
+        self.name = self.name.replace(" ", "_")
 
 
 if __name__ == "__main__":
-    player_test = Player()
-    print(player_test.name)
-    player_test.draw_card()
+    test_player = Player(name="Mr. Test     ")
+    print(test_player.name, "hello")
