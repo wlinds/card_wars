@@ -12,6 +12,7 @@ def read_cards_from(json_file_path):
             for card_data in data:
                 if card_data.get("card_type") == "minion":
                     minion_card = Minion(
+                        card_id=card_data["card_id"],
                         name=card_data["name"],
                         description=card_data["description"],
                         mana_cost=card_data["mana_cost"],
@@ -24,6 +25,7 @@ def read_cards_from(json_file_path):
 
                 if card_data.get("card_type") == "weapon":
                     weapon_card = Weapon(
+                        card_id=card_data["card_id"],
                         name=card_data["name"],
                         description=card_data["description"],
                         mana_cost=card_data["mana_cost"],
@@ -34,6 +36,7 @@ def read_cards_from(json_file_path):
 
                 elif card_data.get("card_type") == "spell":
                     spell_card = Spell(
+                        card_id=card_data["card_id"],
                         name=card_data["name"],
                         description=card_data["description"],
                         mana_cost=card_data["mana_cost"],

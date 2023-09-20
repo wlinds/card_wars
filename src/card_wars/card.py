@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Card:
+    card_id: str
     name: str
     description: str
     mana_cost: int
