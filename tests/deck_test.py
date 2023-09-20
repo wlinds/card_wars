@@ -1,6 +1,6 @@
-from src.card_wars.card import *
-from src.card_wars.deck import Deck
-from src.card_wars.import_cards import read_cards_from
+from card_wars.card import *
+from card_wars.deck import Deck
+from card_wars.import_cards import read_cards_from
 
 if __name__ == "__main__":
     # Create deck instance
@@ -20,9 +20,7 @@ if __name__ == "__main__":
             deck.add_card(card)
 
     # Fill rest of deck with copies of same card
-    deck.fill_with_card(
-        Minion("Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
-    )
+    deck.fill_with_card(Minion("Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin"))
 
     print(deck)
 
