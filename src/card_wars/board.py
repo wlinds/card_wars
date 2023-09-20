@@ -100,6 +100,12 @@ class Board:
 
         self.game_turn += 1
 
+        if self.player1.mana < 10:
+            self.player1.mana += 1
+
+        if self.player2.mana < 10:
+            self.player2.mana += 1
+
     def attack_player_minions(self, player_num, target_player_num):
         """
         Simulate attacks from one player's minions to the other player's minions.
@@ -144,9 +150,9 @@ class Board:
 
     def __str__(self):
         board_str = f"Board State (Turn {self.game_turn}):\n"
-        board_str += f"Player 1 Health: {self.player1.health}"
+        board_str += f"Player 1: {self.player1.health}/30 HP | {self.player1.mana} Mana "
         board_str += " " * 60
-        board_str += f"Player 2 Health: {self.player2.health}\n"
+        board_str += f"Player 2: {self.player2.health}/30 HP | {self.player2.mana} Mana \n"
         board_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards\n"
         board_str += f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
         board_str += f"Player 1 Hand: {len(self.player1_hand)} cards\n"
@@ -179,6 +185,10 @@ if __name__ == "__main__":
     board.play_card(1, 0)
 
     # print(board)
+
+    board.attack_phase()
+
+    print(board)
 
     board.attack_phase()
 
