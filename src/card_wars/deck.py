@@ -17,7 +17,7 @@ class Deck:
         if len(self.cards) < self.card_limit:
             self.cards.append(card)
         else:
-            print("Deck is full. Cannot add more cards.")
+            print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
 
     def shuffle(self):
         random.shuffle(self.cards)
@@ -38,7 +38,7 @@ class Deck:
     def __str__(self):
         deck_str = f"{self.name} - {len(self.cards)} cards:\n"
         for card in self.cards:
-            deck_str += f"  {card}\n"
+            deck_str += f"  {card.card_id, card.name}\n"
         return deck_str
 
 
