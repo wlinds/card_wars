@@ -30,7 +30,18 @@ class Player:
         self.active_mana = self.mana_bar
 
     def equip_weapon(self, weapon: Weapon):
-        self.weapon = weapon
+        if isinstance(weapon, Weapon) and self.weapon != None:
+            print(
+                f"{self.name} already has {self.weapon.name} equipped. Old weapon has been destroyed and replaced by {weapon.name}."
+            )
+            self.weapon = weapon
+
+        elif isinstance(weapon, Weapon) and self.weapon == None:
+            print(f"{self.name} equipped {weapon.name}.")
+            self.weapon = weapon
+
+        else:
+            print(f"Cannot equip {weapon.name}.")
 
 
 if __name__ == "__main__":
