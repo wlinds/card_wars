@@ -1,8 +1,8 @@
 import random
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
-from card_wars.card import Card
+from card_wars.card import Card, Weapon
 from card_wars.deck import Deck
 
 
@@ -16,6 +16,7 @@ class Player:
     deck: Deck = Deck()
     max_hand_size: int = 10
     hero_power: str = None
+    weapon: Optional[Weapon] = None
 
     def __post_init__(self):
         # Format name
@@ -27,6 +28,9 @@ class Player:
     def update_active_mana(self):
         """Should be called at the beginning of each turn."""
         self.active_mana = self.mana_bar
+
+    def equip_weapon(self, weapon: Weapon):
+        self.weapon = weapon
 
 
 if __name__ == "__main__":
