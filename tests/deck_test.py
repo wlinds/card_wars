@@ -1,32 +1,22 @@
 from card_wars.card import *
 from card_wars.deck import Deck
-from card_wars.import_cards import read_cards_from
+from card_wars.import_cards import find_card, get_all_cards, read_cards_from
 
 if __name__ == "__main__":
     # Create deck instance
     deck = Deck(name="My Big Deck", card_limit=30)
 
-    # Dict for json files
-    json_files = [
-        "data/card/minion/minions.json",
-        "data/card/weapon/weapons.json",
-        "data/card/spell/spells.json",
-    ]
-
-    # Read dict, add one of each card to deck
-    for json_file in json_files:
-        cards = read_cards_from(json_file)
-        for card in cards:
-            deck.add_card(card)
+    # Add two copies of all available cards
+    for card in get_all_cards():
+        [deck.add_card(card) for _ in range(2)]
 
     # Fill rest of deck with copies of same card
-    deck.fill_with_card(
-        Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
-    )
-
-    print(deck)
+    deck.fill_with_card(find_card("Gnome"))
 
     deck.shuffle()
+
+    # This method only returns the card and pops it from deck.
+    # It doesn't add card to hand. Hand is handled in Board class.
     drawn_card = deck.draw_card()
 
     if drawn_card:
@@ -34,19 +24,8 @@ if __name__ == "__main__":
 
     print(deck)
 
-    for i in range(len(deck.cards) + 1):
-        drawn_card = deck.draw_card()
-        if drawn_card:
-            print(f"Drawn Card: {drawn_card}")
-
-    #     print(deck)
-
     deck2 = Deck("Deck 2")
-    deck2.add_card(
-        Minion("m00", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
-    )
-    deck2.fill_with_card(
-        Spell("s02", "Wild Growth", "Increases player mana by 2", 0, "nature", 4, 0)
-    )
+    deck2.add_card(find_card("m00"))
+    deck2.fill_with_card(find_card("s02"))
 
     print(deck2)
