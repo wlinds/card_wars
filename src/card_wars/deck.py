@@ -45,10 +45,10 @@ class Deck:
 def get_test_deck(deck_type: str = "goblin") -> Deck:
     test_deck = Deck()
     if deck_type == "goblin":
-        test_deck.fill_with_card(find_card("m00"))
+        test_deck.fill_with_card(find_card("mgob000"))
 
     elif deck_type == "gnome":
-        test_deck.fill_with_card(find_card("m02"))
+        test_deck.fill_with_card(find_card("mgno000"))
 
     elif deck_type == "random":
         all_cards_list = get_all_cards()

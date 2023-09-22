@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print(deck)
 
     deck2 = Deck("Deck 2")
-    deck2.add_card(find_card("m00"))
-    deck2.fill_with_card(find_card("s02"))
+    deck2.add_card(find_card("mgob000"))
+    deck2.fill_with_card(find_card("snat000"))
 
     print(deck2)

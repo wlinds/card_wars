@@ -43,7 +43,7 @@ def cast_spell(player, card_id):
     """
 
     # Wild Growth
-    if card_id == "s02":
+    if card_id == "snat000":
         if player.mana_bar >= 0:
             player.mana_bar += 2  # TODO: Handle case when result is >10
             print(
@@ -51,13 +51,3 @@ def cast_spell(player, card_id):
             )
         else:
             print(f"{player.name} does not have enough mana to cast 'Wild Growth'.")
-
-
-if __name__ == "__main__":
-    boblin = Minion("id", "Goblin", "A small creature with a funky smell.", 1, 2, 2, "Goblin")
-    print(boblin.name, " - ", boblin.description)
-
-    fire_blast = Spell("id", "Fire Blast", "A burst of fire.", 2, "Fire", 0, 6)
-    print(f"{fire_blast.mana_cost=}")
-
-    small_shiv = Weapon("id", "Small Shiv", "Crafted from scraps.", 3, 3, 2)
