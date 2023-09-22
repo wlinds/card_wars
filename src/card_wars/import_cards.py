@@ -79,7 +79,7 @@ def get_all_cards() -> list:
 
 
 if __name__ == "__main__":
-    search_by_id = find_card("m00")
+    search_by_id = find_card("mgob00")
     print(search_by_id)
     print(type(search_by_id))
 

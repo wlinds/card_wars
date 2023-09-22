@@ -3,8 +3,8 @@ from card_wars.import_cards import find_card
 from card_wars.player import *
 
 if __name__ == "__main__":
-    war_axe = find_card("w00")
-    goblin = find_card("m00")
+    war_axe = find_card("w000000")
+    goblin = find_card("mgob000")
     print(type(war_axe))
 
     player = Player()

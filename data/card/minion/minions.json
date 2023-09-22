@@ -1,6 +1,6 @@
 [
     {
-      "card_id": "m00",
+      "card_id": "mgob000",
       "card_type": "minion",
       "name": "Goblin",
       "description": "A small creature with a funky smell.",
@@ -11,7 +11,7 @@
     },
 
     {
-      "card_id": "m01",
+      "card_id": "mgob001",
       "card_type": "minion",
       "name": "Bobblin The Goblin",
       "description": "A fierce Goblin.",
@@ -24,7 +24,7 @@
     },
 
     {
-      "card_id": "m02",
+      "card_id": "mgno000",
       "card_type": "minion",
       "name": "Gnome",
       "description": "A tiny fuckwit.",

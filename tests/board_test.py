@@ -7,8 +7,10 @@ from card_wars.player import Player
 if __name__ == "__main__":
     player1_deck = Deck("mana_storm")  # Create empty deck
 
-    player1_deck.add_card(find_card("m00"))  # Add one Goblin Minion
-    player1_deck.fill_with_card(find_card("s02"))  # Fill the rest of deck with Wild Growth Spell
+    player1_deck.add_card(find_card("mgob000"))  # Add one Goblin Minion
+    player1_deck.fill_with_card(
+        find_card("snat000")
+    )  # Fill the rest of deck with Wild Growth Spell
 
     player2_deck = get_test_deck("gnome")  # Get gnome deck for Player 2
 
