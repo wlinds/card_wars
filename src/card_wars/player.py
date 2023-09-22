@@ -41,7 +41,7 @@ class Player:
             self.weapon = weapon
 
         else:
-            print(f"Cannot equip {weapon.name}.")
+            print(f"Cannot equip {weapon}.")
 
 
 if __name__ == "__main__":
