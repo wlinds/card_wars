@@ -58,7 +58,9 @@ class Board:
                 )
 
         else:
-            print(f"Player {player_num} has no cards left in their deck.")
+            # TODO make penalty damage increase by 1 for each draw (probably add another attribute for this)
+            print(f"Player {player_num} has no cards left in their deck and took 1 penalty damage!")
+            player.health -= 1
 
     def play_card(self, player_num, card_index):
         """
