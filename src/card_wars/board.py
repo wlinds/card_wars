@@ -67,27 +67,31 @@ class Board:
 
         card_to_play = player_hand[card_index]
 
-        # Check if player has enough active_mana to play card
-        if player.active_mana >= card_to_play.mana_cost:
-            if isinstance(card_to_play, Minion):
-                player_field.append(card_to_play)
-                del player_hand[card_index]
+        if card_to_play:
+            # Check if player has enough active_mana to play card
+            if player.active_mana >= card_to_play.mana_cost:
+                if isinstance(card_to_play, Minion):
+                    player_field.append(card_to_play)
+                    del player_hand[card_index]
 
-                # Deduct mana cost from active_mana
-                player.active_mana -= card_to_play.mana_cost
+                    # Deduct mana cost from active_mana
+                    player.active_mana -= card_to_play.mana_cost
 
-                print(
-                    f"[+] Player {player_num} played: {card_to_play.name} "
-                    f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
-                )
-            elif isinstance(card_to_play, Spell):
-                cast_spell(player, card_to_play.card_id)
+                    print(
+                        f"[+] Player {player_num} played: {card_to_play.name} "
+                        f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
+                    )
+                elif isinstance(card_to_play, Spell):
+                    cast_spell(player, card_to_play.card_id)
 
-            elif isinstance(card_to_play, Weapon):
-                print("TODO: Implement equip weapon logic")
-                pass
+                elif isinstance(card_to_play, Weapon):
+                    print("TODO: Implement equip weapon logic")
+                    pass
+            else:
+                print(f"Not enough mana to play {card_to_play.name}.")
+
         else:
-            print(f"Not enough mana to play {card_to_play.name}.")
+            print("No card at selected index.")
 
     def attack_phase(self):
         """
