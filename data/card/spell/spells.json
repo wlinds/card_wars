@@ -1,6 +1,6 @@
 [
     {
-      "card_id": "s00",
+      "card_id": "sfir000",
       "card_type": "spell",
       "name": "Fire Blast",
       "description": "A furious fireball.",
@@ -11,7 +11,7 @@
     },
 
     {
-      "card_id": "s01",
+      "card_id": "sfro000",
       "card_type": "spell",
       "name": "Frost Nova",
       "description": "AoE.",
@@ -23,7 +23,7 @@
     },
 
     {
-      "card_id": "s02",
+      "card_id": "snat000",
       "card_type": "spell",
       "name": "Wild Growth",
       "description": "Increases player mana by 2",
