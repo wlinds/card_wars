@@ -18,6 +18,19 @@ class Board:
     player2_field: List[Card] = field(default_factory=list)
     player1_graveyard: List[Card] = field(default_factory=list)
     player2_graveyard: List[Card] = field(default_factory=list)
+    board_id: int = 0  # Used for GUI to select board
+
+    def end_turn(self):
+        self.game_turn += 1
+
+        if self.player1.mana_bar < self.player1.max_mana_bar:
+            self.player1.mana_bar += 1
+
+        if self.player2.mana_bar < self.player2.max_mana_bar:
+            self.player2.mana_bar += 1
+
+        self.player1.update_active_mana()
+        self.player2.update_active_mana()
 
     def draw_card(self, player_num):
         """
@@ -120,16 +133,7 @@ class Board:
             print("Player 2 has no minions left.")
             self.player1.health -= player2_damage  # Player 1's minions deal damage to Player 2
 
-        self.game_turn += 1
-
-        if self.player1.mana_bar < self.player1.max_mana_bar:
-            self.player1.mana_bar += 1
-
-        if self.player2.mana_bar < self.player2.max_mana_bar:
-            self.player2.mana_bar += 1
-
-        self.player1.update_active_mana()
-        self.player2.update_active_mana()
+        self.end_turn()
 
     def attack_player_minions(self, player_num, target_player_num):
         """
