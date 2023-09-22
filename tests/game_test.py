@@ -26,8 +26,16 @@ def goblin_vs_gnomes_test():
     while p1.health > 0 and p2.health > 0:
         cw.board.draw_card(1)
         cw.board.draw_card(2)
-        cw.board.play_card(1, 0)
-        cw.board.play_card(2, 0)
+
+        cw.board.draw_card(2)
+        cw.board.draw_card(2)
+
+        # Try to play card at hand index[0] for each active mana
+        for i in range(p1.active_mana):
+            cw.board.play_card(1, 0)
+        for i in range(p2.active_mana):
+            cw.board.play_card(2, 0)
+
         cw.board.attack_phase()
         print(cw.board)
 
