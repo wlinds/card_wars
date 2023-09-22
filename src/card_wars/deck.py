@@ -1,3 +1,4 @@
+import copy
 import json
 import random
 from dataclasses import dataclass, field
@@ -15,7 +16,9 @@ class Deck:
 
     def add_card(self, card: Card):
         if len(self.cards) < self.card_limit:
-            self.cards.append(card)
+            # Create a new instance of the card and add it to the deck
+            new_card = copy.deepcopy(card)
+            self.cards.append(new_card)
         else:
             print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
 
@@ -33,7 +36,9 @@ class Deck:
         Fill the deck with a specific card until the deck limit is reached.
         """
         while len(self.cards) < self.card_limit:
-            self.cards.append(card)
+            # Create a new instance of the card and add it to the deck
+            new_card = copy.deepcopy(card)
+            self.cards.append(new_card)
 
     def __str__(self):
         deck_str = f"{self.name} - {len(self.cards)} cards:\n"
