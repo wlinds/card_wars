@@ -54,21 +54,21 @@ class GameSession:
             if player.active_mana >= card_to_play.mana_cost:
                 if isinstance(card_to_play, Minion):
                     player_field.append(card_to_play)
-                    del player_hand[card_index]
-
-                    player.active_mana -= card_to_play.mana_cost
 
                     log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
                         f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
                     )
+
                 elif isinstance(card_to_play, Spell):
                     cast_spell(player, card_to_play.card_id)
-                    player.active_mana -= card_to_play.mana_cost
 
                 elif isinstance(card_to_play, Weapon):
-                    print("TODO: Implement equip weapon logic")
-                    pass
+                    player.equip_weapon(card_to_play)
+
+                player.active_mana -= card_to_play.mana_cost
+                del player_hand[card_index]
+
             else:
                 print(f"Not enough mana to play {card_to_play.name}.")
 
