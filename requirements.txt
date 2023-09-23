@@ -4,3 +4,4 @@ isort
 pandas
 numpy
 pre-commit
+loguru
