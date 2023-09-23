@@ -7,6 +7,8 @@ from card_wars.card import Card, Minion, Spell, Weapon, cast_spell
 from card_wars.deck import Deck, get_test_deck
 from card_wars.player import Player
 
+log = logs.logger.info
+
 
 @dataclass
 class Board:
@@ -22,7 +24,7 @@ class Board:
     board_id: int = 0  # Used for GUI to select board
 
     def end_turn(self):
-        logs.logger.info(f"Turn {self.game_turn} ended.")
+        log(f"Turn {self.game_turn} ended.")
 
         self.game_turn += 1
 
@@ -52,19 +54,17 @@ class Board:
             player_hand.append(drawn_card)
 
             if isinstance(drawn_card, Minion):
-                print(
+                log(
                     f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health}] Mana cost: {drawn_card.mana_cost}"
                 )
             if isinstance(drawn_card, Spell or Weapon):
-                print(
+                log(
                     f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}"
                 )
 
         else:
             # TODO make penalty damage increase by 1 for each draw (probably add another attribute for this)
-            logs.logger.info(
-                f"Player {player_num} has no cards left in their deck and took 1 penalty damage!"
-            )
+            log(f"Player {player_num} has no cards left in their deck and took 1 penalty damage!")
             player.health -= 1
 
     def play_card(self, player_num, card_index):
@@ -97,7 +97,7 @@ class Board:
                     # Deduct mana cost from active_mana
                     player.active_mana -= card_to_play.mana_cost
 
-                    print(
+                    log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
                         f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
                     )
@@ -134,18 +134,18 @@ class Board:
 
         # Check if either player has no minions left on the field
         if not self.player1_field:
-            print("Player 1 has no minions left.")
+            log("Player 1 has no minions left.")
             self.player2.health -= player1_damage
 
-            logs.logger.info(f"Player 2 dealt {player2_damage} to enemy player.")
+            log(f"Player 2 dealt {player2_damage} to enemy player.")
 
         if not self.player2_field:
-            print("Player 2 has no minions left.")
+            log("Player 2 has no minions left.")
             self.player1.health -= player2_damage
 
-            logs.logger.info(f"Player 1 dealt {player1_damage} to enemy player.")
+            log(f"Player 1 dealt {player1_damage} to enemy player.")
 
-        logs.logger.info(f"{self.player1.health=}, {self.player2.health=}")
+        log(f"{self.player1.health=}, {self.player2.health=}")
 
         self.end_turn()
 
@@ -163,7 +163,7 @@ class Board:
         for attacking_minion in player_field:
             if target_player_field:
                 target_minion = random.choice(target_player_field)
-                print(
+                log(
                     f"[->] Player {player_num}'s {attacking_minion.name} "
                     f"[{attacking_minion.attack}/{attacking_minion.health}] "
                     f"attacks Player {target_player_num}'s {target_minion.name} "
@@ -190,7 +190,7 @@ class Board:
         dead_minions = [minion for minion in player_field if minion.health <= 0]
 
         for dead_minion in dead_minions:
-            print(f"Player {player_num}'s {dead_minion.name} has died.")
+            log(f"Player {player_num}'s {dead_minion.name} has died.")
             player_field.remove(dead_minion)
             player_graveyard.append(dead_minion)
 
@@ -211,56 +211,4 @@ class Board:
 
 
 if __name__ == "__main__":
-    player1_deck = get_test_deck("goblin")
-    player2_deck = get_test_deck("gnome")
-
-    player1 = Player(deck=player1_deck)
-    player2 = Player(deck=player2_deck)
-
-    # Create a board with the two decks
-    board = Board(player1, player2)
-
-    # Each player draws 7 cards
-    for i in range(7):
-        board.draw_card(1)
-        board.draw_card(2)
-
-    # Player 1 plays 3 cards
-    board.play_card(1, 0)
-    board.play_card(1, 0)
-    board.play_card(1, 0)
-
-    # Player 2 plays 3 cards
-    board.play_card(2, 0)
-    board.play_card(2, 0)
-    board.play_card(2, 0)
-
-    # print(board)
-
-    board.attack_phase()
-
-    print(board)
-    print(board.player1.active_mana)
-
-    board.attack_phase()
-
-    print(board.player1.active_mana)
-
-    print(board)
-
-    print(board.player1.active_mana)
-    print(board.player1.mana_bar)
-
-    # Player 1 plays 3 cards
-    board.play_card(1, 0)
-    board.play_card(1, 0)
-    board.play_card(1, 0)
-
-    # Player 2 plays 3 cards
-    board.play_card(2, 0)
-    board.play_card(2, 0)
-    board.play_card(2, 0)
-
-    board.attack_phase()
-
-    print(board)
+    pass
