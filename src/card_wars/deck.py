@@ -26,6 +26,9 @@ class Deck:
         random.shuffle(self.cards)
 
     def draw_card(self):
+        """
+        Regular draw method. This removes the card from the deck.
+        """
         if self.cards:
             return self.cards.pop(0)  # Remove and return the top card from the deck
         else:
@@ -35,10 +38,21 @@ class Deck:
         """
         Fill the deck with a specific card until the deck limit is reached.
         """
+
         while len(self.cards) < self.card_limit:
             # Create a new instance of the card and add it to the deck
             new_card = copy.deepcopy(card)
             self.cards.append(new_card)
+
+    def get_card(self, index: int) -> Card:
+        """
+        Get the card at a specific index in the deck.
+        This does not remove the card from the deck.
+        """
+        if 0 <= index < len(self.cards):
+            return self.cards[index]
+        else:
+            print(f"Invalid index {index}. Must be in range [0, {len(self.cards) - 1}]")
 
     def __str__(self):
         deck_str = f"{self.name} - {len(self.cards)} cards:\n"
