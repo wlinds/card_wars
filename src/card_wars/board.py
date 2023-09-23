@@ -1,214 +1,48 @@
-import random
 from dataclasses import dataclass, field
 from typing import List
 
 from card_wars import logs
-from card_wars.card import Card, Minion, Spell, Weapon, cast_spell
-from card_wars.deck import Deck, get_test_deck
-from card_wars.player import Player
+from card_wars.card import Card, Minion
 
 log = logs.logger.info
+
+# Class for Board. Only holds current Board (each player has one corresponding field).
+# TODO: Set board space limit.
 
 
 @dataclass
 class Board:
-    player1: Player
-    player2: Player
-    game_turn: int = 0
-    player1_hand: List[Card] = field(default_factory=list)
-    player2_hand: List[Card] = field(default_factory=list)
-    player1_field: List[Card] = field(default_factory=list)
-    player2_field: List[Card] = field(default_factory=list)
-    player1_graveyard: List[Card] = field(default_factory=list)
-    player2_graveyard: List[Card] = field(default_factory=list)
-    board_id: int = 0  # Used for GUI to select board
+    board_id: int = 0  # Used for GUI to select boards
+    p1_field: List[Card] = field(default_factory=list)
+    p2_field: List[Card] = field(default_factory=list)
+    p1_grave: List[Card] = field(default_factory=list)
+    p2_grave: List[Card] = field(default_factory=list)
 
-    def end_turn(self):
-        log(f"Turn {self.game_turn} ended.")
-
-        self.game_turn += 1
-
-        if self.player1.mana_bar < self.player1.max_mana_bar:
-            self.player1.mana_bar += 1
-
-        if self.player2.mana_bar < self.player2.max_mana_bar:
-            self.player2.mana_bar += 1
-
-        self.player1.update_active_mana()
-        self.player2.update_active_mana()
-
-    def draw_card(self, player_num):
+    def add_to_field(self, minion: Minion, player_num):
         """
-        Draw a card from deck and add it to hand.
-        player_num: 1 or 2 to indicate which player is drawing.
+        Only for custom card interaction (summoning additional minions).
+        For playing a card, instead call play_card in GameSession class.
         """
-        if player_num not in [1, 2]:
-            print("Invalid player number. Use 1 or 2.")
+        if isinstance(minion, Minion):
+            player_field = self.p1_field if player_num == 1 else self.p2_field
+            player_field.append(minion)
+            log(f"{minion.name} added to P{player_num}'s field.")
             return
-
-        player = self.player1 if player_num == 1 else self.player2
-        player_hand = self.player1_hand if player_num == 1 else self.player2_hand
-
-        if player.deck.cards:
-            drawn_card = player.deck.draw_card()
-            player_hand.append(drawn_card)
-
-            if isinstance(drawn_card, Minion):
-                log(
-                    f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health}] Mana cost: {drawn_card.mana_cost}"
-                )
-            if isinstance(drawn_card, Spell or Weapon):
-                log(
-                    f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}"
-                )
-
         else:
-            # TODO make penalty damage increase by 1 for each draw (probably add another attribute for this)
-            log(f"Player {player_num} has no cards left in their deck and took 1 penalty damage!")
-            player.health -= 1
-
-    def play_card(self, player_num, card_index):
-        """
-        Play a card from hand into playing field.
-        player_num: 1 or 2 to indicate which player is playing.
-        card_index: The index of the card in the player's hand to play.
-        """
-        if player_num not in [1, 2]:
-            print("Invalid player number. Use 1 or 2.")
-            return
-
-        player = self.player1 if player_num == 1 else self.player2
-        player_hand = self.player1_hand if player_num == 1 else self.player2_hand
-        player_field = self.player1_field if player_num == 1 else self.player2_field
-
-        if not (0 <= card_index < len(player_hand)):
-            print("Invalid card index.")
-            return
-
-        card_to_play = player_hand[card_index]
-
-        if card_to_play:
-            # Check if player has enough active_mana to play card
-            if player.active_mana >= card_to_play.mana_cost:
-                if isinstance(card_to_play, Minion):
-                    player_field.append(card_to_play)
-                    del player_hand[card_index]
-
-                    # Deduct mana cost from active_mana
-                    player.active_mana -= card_to_play.mana_cost
-
-                    log(
-                        f"[+] Player {player_num} played: {card_to_play.name} "
-                        f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
-                    )
-                elif isinstance(card_to_play, Spell):
-                    cast_spell(player, card_to_play.card_id)
-
-                elif isinstance(card_to_play, Weapon):
-                    print("TODO: Implement equip weapon logic")
-                    pass
-            else:
-                print(f"Not enough mana to play {card_to_play.name}.")
-
-        else:
-            print("No card at selected index.")
-
-    def attack_phase(self):
-        """
-        Simulate the attack phase where minions on the field can attack each other and deal damage.
-        Handle minion deaths and player health deduction.
-        """
-        # Player 1 attacks Player 2's minions
-        self.attack_player_minions(player_num=1, target_player_num=2)
-
-        # Player 2 attacks Player 1's minions
-        self.attack_player_minions(player_num=2, target_player_num=1)
-
-        # Calculate total attack damage from remaining minions on the field
-        player1_damage = sum(minion.attack for minion in self.player1_field)
-        player2_damage = sum(minion.attack for minion in self.player2_field)
-
-        # Deduct player health based on total attack damage
-        self.player1.health -= player2_damage
-        self.player2.health -= player1_damage
-
-        # Check if either player has no minions left on the field
-        if not self.player1_field:
-            log("Player 1 has no minions left.")
-            self.player2.health -= player1_damage
-
-            log(f"Player 2 dealt {player2_damage} to enemy player.")
-
-        if not self.player2_field:
-            log("Player 2 has no minions left.")
-            self.player1.health -= player2_damage
-
-            log(f"Player 1 dealt {player1_damage} to enemy player.")
-
-        log(f"{self.player1.health=}, {self.player2.health=}")
-
-        self.end_turn()
-
-    def attack_player_minions(self, player_num, target_player_num):
-        """
-        Simulate attacks from one player's minions to the other player's minions.
-        """
-        if player_num not in [1, 2] or target_player_num not in [1, 2]:
-            print("Invalid player number. Use 1 or 2.")
-            return
-
-        player_field = self.player1_field if player_num == 1 else self.player2_field
-        target_player_field = self.player1_field if target_player_num == 1 else self.player2_field
-
-        for attacking_minion in player_field:
-            if target_player_field:
-                target_minion = random.choice(target_player_field)
-                log(
-                    f"[->] Player {player_num}'s {attacking_minion.name} "
-                    f"[{attacking_minion.attack}/{attacking_minion.health}] "
-                    f"attacks Player {target_player_num}'s {target_minion.name} "
-                    f"[{target_minion.attack}/{target_minion.health}]"
-                )
-                # Calculate attack result
-                attacking_minion.health -= target_minion.attack
-                target_minion.health -= attacking_minion.attack
-
-                self.remove_dead_minions(1)
-                self.remove_dead_minions(2)
-
-    def remove_dead_minions(self, player_num):
-        """
-        Remove dead minions (health <= 0) from the player's field.
-        """
-        if player_num not in [1, 2]:
-            print("Invalid player number. Use 1 or 2.")
-            return
-
-        player_field = self.player1_field if player_num == 1 else self.player2_field
-        player_graveyard = self.player1_graveyard if player_num == 1 else self.player2_graveyard
-
-        dead_minions = [minion for minion in player_field if minion.health <= 0]
-
-        for dead_minion in dead_minions:
-            log(f"Player {player_num}'s {dead_minion.name} has died.")
-            player_field.remove(dead_minion)
-            player_graveyard.append(dead_minion)
+            log("Invalid input. Nothing has been added to Board.")
 
     def __str__(self):
-        board_str = f"Board State (Turn {self.game_turn}):\n"
-        board_str += f"Player 1: {self.player1.health}/30 HP | {self.player1.mana_bar} Mana "
-        board_str += " " * 60
-        board_str += f"Player 2: {self.player2.health}/30 HP | {self.player2.mana_bar} Mana \n"
-        board_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards\n"
-        board_str += f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
-        board_str += f"Player 1 Hand: {len(self.player1_hand)} cards\n"
-        board_str += f"Player 2 Hand: {len(self.player2_hand)} cards\n"
-        board_str += f"Player 1 Field: {len(self.player1_field)} cards\n"
-        board_str += f"Player 2 Field: {len(self.player2_field)} cards\n"
-        board_str += f"Player 1 Graveyard: {len(self.player1_graveyard)} cards\n"
-        board_str += f"Player 2 Graveyard: {len(self.player2_graveyard)} cards\n"
+        def format_minions(minions):
+            return ", ".join(
+                [f"{minion.name} [{minion.attack}/{minion.health}]" for minion in minions]
+            )
+
+        board_str = "Minions on board:\n"
+
+        p1_field = format_minions(self.p1_field)
+        p2_field = format_minions(self.p2_field)
+
+        board_str += f"Player 1 Field: {p1_field}\n" if p1_field else "Player 1 Field is empty.\n"
+        board_str += f"Player 2 Field: {p2_field}\n" if p2_field else "Player 2 Field is empty.\n"
+
         return board_str
-
-
-if __name__ == "__main__":
-    pass
