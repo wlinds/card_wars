@@ -6,7 +6,7 @@ import loguru
 
 logger = loguru.logger
 
-LOG_DIR = "logs/test"
+LOG_DIR = "logs/test/"
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
