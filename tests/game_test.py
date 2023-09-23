@@ -1,9 +1,11 @@
+from card_wars import logs
 from card_wars.board import Board
 from card_wars.deck import get_test_deck
 from card_wars.game import GameSession
 from card_wars.player import Player
 
 
+@logs.game_state
 def goblin_vs_gnomes_test():
     p1 = Player(name="P1", deck=get_test_deck("goblin"))
     p2 = Player(name="P2", deck=get_test_deck("gnome"))

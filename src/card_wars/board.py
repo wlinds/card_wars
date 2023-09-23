@@ -2,6 +2,7 @@ import random
 from dataclasses import dataclass, field
 from typing import List
 
+from card_wars import logs
 from card_wars.card import Card, Minion, Spell, Weapon, cast_spell
 from card_wars.deck import Deck, get_test_deck
 from card_wars.player import Player
@@ -21,6 +22,8 @@ class Board:
     board_id: int = 0  # Used for GUI to select board
 
     def end_turn(self):
+        logs.logger.info(f"Turn {self.game_turn} ended.")
+
         self.game_turn += 1
 
         if self.player1.mana_bar < self.player1.max_mana_bar:
@@ -59,7 +62,9 @@ class Board:
 
         else:
             # TODO make penalty damage increase by 1 for each draw (probably add another attribute for this)
-            print(f"Player {player_num} has no cards left in their deck and took 1 penalty damage!")
+            logs.logger.info(
+                f"Player {player_num} has no cards left in their deck and took 1 penalty damage!"
+            )
             player.health -= 1
 
     def play_card(self, player_num, card_index):
@@ -130,10 +135,17 @@ class Board:
         # Check if either player has no minions left on the field
         if not self.player1_field:
             print("Player 1 has no minions left.")
-            self.player2.health -= player1_damage  # Player 2's minions deal damage to Player 1
+            self.player2.health -= player1_damage
+
+            logs.logger.info(f"Player 2 dealt {player2_damage} to enemy player.")
+
         if not self.player2_field:
             print("Player 2 has no minions left.")
-            self.player1.health -= player2_damage  # Player 1's minions deal damage to Player 2
+            self.player1.health -= player2_damage
+
+            logs.logger.info(f"Player 1 dealt {player1_damage} to enemy player.")
+
+        logs.logger.info(f"{self.player1.health=}, {self.player2.health=}")
 
         self.end_turn()
 
