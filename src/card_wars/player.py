@@ -2,8 +2,11 @@ import random
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from card_wars.card import Card, Weapon
+from card_wars import logs
+from card_wars.card import Card, Minion, Weapon
 from card_wars.deck import Deck
+
+log = logs.logger.info
 
 
 @dataclass
@@ -25,23 +28,68 @@ class Player:
         self.name = self.name.replace(",", "")
         self.name = self.name.replace(" ", "_")
 
+    def take_damage(self, damage):
+        if damage > 0:
+            self.health -= damage
+            log(f"{self.name} takes {damage} damage. Current health: {self.health}")
+        else:
+            print(f"Invalid damage value: {damage}")
+
     def update_active_mana(self):
         """Should be called at the beginning of each turn."""
         self.active_mana = self.mana_bar
 
     def equip_weapon(self, weapon: Weapon):
         if isinstance(weapon, Weapon) and self.weapon != None:
-            print(
+            log(
                 f"{self.name} already has {self.weapon.name} equipped. Old weapon has been destroyed and replaced by {weapon.name}."
             )
             self.weapon = weapon
 
         elif isinstance(weapon, Weapon) and self.weapon == None:
-            print(f"{self.name} equipped {weapon.name}.")
+            log(f"{self.name} equipped {weapon.name} [{weapon.attack}/{weapon.durability}].")
             self.weapon = weapon
 
         else:
             print(f"Cannot equip {weapon}.")
+
+    def attack_with_weapon(self, target):
+        """
+        Returns true if target is killed. Else returns none.
+        """
+
+        if self.weapon is None:
+            print("Cannot attack with no equipped weapon.")
+            return
+
+        if self.weapon.attack <= 0:
+            print("Cannot attack with 0 attack weapon.")
+            return
+
+        if isinstance(target, Player):
+            log(
+                f"{self.name} attacked {target.name} with {self.weapon.name} for {self.weapon.attack} damage."
+            )
+            target.take_damage(self.weapon.attack)
+            if target.health <= 0:
+                return True
+
+        elif isinstance(target, Minion):
+            log(
+                f"{self.name} attacked {target.name} [{target.attack}/{target.health}] with {self.weapon.name} for {self.weapon.attack} damage."
+            )
+            target.take_damage(self.weapon.attack)
+            if target.health <= 0:
+                return True
+
+        else:
+            print("Invalid target.")
+
+        self.weapon.durability -= 1
+
+        if self.weapon.durability <= 0:
+            log(f"{self.weapon.name} was destroyed.")
+            self.weapon = None
 
 
 if __name__ == "__main__":
