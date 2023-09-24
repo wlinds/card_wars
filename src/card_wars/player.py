@@ -53,7 +53,7 @@ class Player:
         else:
             print(f"Cannot equip {weapon}.")
 
-    def attack_with_weapon(self, target):
+    def attack_target(self, target):
         """
         Attacks with player weapon. Returns none.
         """
