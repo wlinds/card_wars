@@ -16,6 +16,13 @@ class Minion(Card):
     race: str = None
     ability: str = None
 
+    def take_damage(self, damage):
+        if damage > 0:
+            self.health -= damage
+            print(f"{self.name} took {damage} damage.")
+        else:
+            print(f"Invalid damage value: {damage}")
+
 
 @dataclass
 class Spell(Card):
@@ -28,6 +35,7 @@ class Spell(Card):
 class Weapon(Card):
     attack: int
     durability: int
+    ability: str = None
 
 
 # ----- Spell logic ----- #
