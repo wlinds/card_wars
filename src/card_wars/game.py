@@ -195,10 +195,12 @@ class GameSession:
             + self.player2.name
             + "\n"
         )
-        game_str += f"Player 1: {self.player1.health}/30 HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
         game_str += (
-            (width - 2) * sep
-            + f"Player 2: {self.player2.health}/30 HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
+            f"{self.player1.health}/30 HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
+        )
+        game_str += (
+            (width + 8) * sep
+            + f"{self.player2.health}/30 HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
         )
         game_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards"
         game_str += (4 + width) * sep + f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
