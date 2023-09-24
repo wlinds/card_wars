@@ -55,7 +55,7 @@ class Player:
 
     def attack_with_weapon(self, target):
         """
-        Returns true if target is killed. Else returns none.
+        Attacks with player weapon. Returns none.
         """
 
         if self.weapon is None:
@@ -71,16 +71,12 @@ class Player:
                 f"{self.name} attacked {target.name} with {self.weapon.name} for {self.weapon.attack} damage."
             )
             target.take_damage(self.weapon.attack)
-            if target.health <= 0:
-                return True
 
         elif isinstance(target, Minion):
             log(
                 f"{self.name} attacked {target.name} [{target.attack}/{target.health}] with {self.weapon.name} for {self.weapon.attack} damage."
             )
             target.take_damage(self.weapon.attack)
-            if target.health <= 0:
-                return True
 
         else:
             print("Invalid target.")

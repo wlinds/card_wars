@@ -44,14 +44,14 @@ def goblin_vs_gnomes_test():
         # Attack enemy minion with weapon if minion on board
         if p1.weapon and cw.board.p2_field:
             weapon_target = cw.board.p2_field[0]
-            if p1.attack_with_weapon(target=weapon_target):
-                cw.remove_dead_minions(2)
+            p1.attack_with_weapon(target=weapon_target)
+            cw.remove_dead_minions(2)
 
         # Else attack enemy player
         elif p1.weapon:
             weapon_target = cw.player2
-            if p1.attack_with_weapon(target=weapon_target):
-                print("This kills the player. Implement game ending logic here")  # TODO
+            p1.attack_with_weapon(target=weapon_target)
+            print("TODO Implement check for player health.")
 
         print(cw)
         print(cw.board)
