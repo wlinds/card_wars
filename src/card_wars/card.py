@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+from card_wars.logs import logger
+
+log = logger.info
+
 
 @dataclass
 class Card:
@@ -22,6 +26,20 @@ class Minion(Card):
             print(f"{self.name} took {damage} damage.")
         else:
             print(f"Invalid damage value: {damage}")
+
+    def attack_target(self, target):
+        if self.attack <= 0:
+            print(f"Cannot attack with {self.name} (attack value <= 0).")
+            return
+
+        elif isinstance(target, Minion):
+            target.take_damage(self.attack)
+            log(
+                f"{self.name} attacked {target.name} [{target.attack}/{target.health}] for {self.attack} damage."
+            )
+        else:
+            target.take_damage(self.attack)
+            log(f"{self.name} attacked {target.name} for {self.attack} damage.")
 
 
 @dataclass

@@ -154,18 +154,10 @@ class GameSession:
         for attacking_minion in player_field:
             if target_player_field:
                 target_minion = random.choice(target_player_field)
-                log(
-                    f"[->] Player {player_num}'s {attacking_minion.name} "
-                    f"[{attacking_minion.attack}/{attacking_minion.health}] "
-                    f"attacks Player {target_player_num}'s {target_minion.name} "
-                    f"[{target_minion.attack}/{target_minion.health}]"
-                )
-                # Calculate attack result
-                attacking_minion.health -= target_minion.attack
-                target_minion.health -= attacking_minion.attack
+                attacking_minion.attack_target(target_minion)  # Use the attack_target method
 
-                self.remove_dead_minions(1)
-                self.remove_dead_minions(2)
+        self.remove_dead_minions(player_num)
+        self.remove_dead_minions(target_player_num)
 
     def remove_dead_minions(self, player_num):
         """
