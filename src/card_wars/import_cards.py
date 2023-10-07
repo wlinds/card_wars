@@ -11,6 +11,8 @@ def read_cards_from(json_file_path):
             data = json.load(json_file)
             for card_data in data:
                 if card_data.get("card_type") == "minion":
+                    # Convert "buffs" to a list if it exists, or use an empty list by default
+                    buffs = card_data.get("buffs", [])
                     minion_card = Minion(
                         card_id=card_data["card_id"],
                         name=card_data["name"],
@@ -20,6 +22,7 @@ def read_cards_from(json_file_path):
                         health=card_data["health"],
                         race=card_data.get("race"),
                         ability=card_data.get("ability"),
+                        buffs=buffs,
                     )
                     card_list.append(minion_card)
 
@@ -79,7 +82,7 @@ def get_all_cards() -> list:
 
 
 if __name__ == "__main__":
-    search_by_id = find_card("mgob00")
+    search_by_id = find_card("mgno001")
     print(search_by_id)
     print(type(search_by_id))
 
