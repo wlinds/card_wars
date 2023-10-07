@@ -64,12 +64,20 @@
       "name": "Dragonite",
       "description": "Hey, isn't that a Pokémon?",
       "card_text": "Battlecry: Deal 2 damage to all enemy minion. Divine Shield.",
-      "mana_cost": 1,
+      "mana_cost": 8,
       "attack": 7,
       "health": 7,
       "race": "Dragon",
       "ability": "",
-      "buffs": ["divine_shield", {"aoe_battlercy": 2, "friendly": 0}]
+      "buffs": [
+        {
+          "type": "aoe_battlecry",
+          "effect": "damage",
+          "value": 2,
+          "target": "all"
+        },
+        "divine_shield"
+      ]
 
     }
 ]
