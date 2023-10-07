@@ -48,13 +48,28 @@
       "card_type": "minion",
       "name": "Grandma Gnome",
       "description": "",
-      "card_text": "",
+      "card_text": "Divine Shield",
       "mana_cost": 2,
       "attack": 2,
       "health": 1,
       "race": "Gnome",
       "ability": "",
       "buffs": ["divine_shield"]
+
+    },
+
+    {
+      "card_id": "mdra000",
+      "card_type": "minion",
+      "name": "Dragonite",
+      "description": "Hey, isn't that a Pokémon?",
+      "card_text": "Battlecry: Deal 2 damage to all enemy minion. Divine Shield.",
+      "mana_cost": 1,
+      "attack": 7,
+      "health": 7,
+      "race": "Dragon",
+      "ability": "",
+      "buffs": ["divine_shield", "on_play"]
 
     }
 ]
