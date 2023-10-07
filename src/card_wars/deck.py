@@ -54,6 +54,12 @@ class Deck:
         else:
             print(f"Invalid index {index}. Must be in range [0, {len(self.cards) - 1}]")
 
+    def burn_deck(self):
+        """
+        Remove all cards in deck.
+        """
+        self.cards = []
+
     def __str__(self):
         deck_str = f"{self.name} - {len(self.cards)} cards:\n"
         for card in self.cards:
