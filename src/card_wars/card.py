@@ -30,7 +30,7 @@ class Minion(Card):
 
         if damage > 0:
             self.health -= damage
-            print(f"{self.name} took {damage} damage.")
+            log(f"{self.name} took {damage} damage.")
         else:
             print(f"Invalid damage value: {damage}")
 
@@ -40,10 +40,11 @@ class Minion(Card):
             return
 
         elif isinstance(target, Minion):
-            target.take_damage(self.attack)
             log(
-                f"{self.name} attacked {target.name} [{target.attack}/{target.health}] for {self.attack} damage."
+                f"{self.name} [{self.attack}/{self.health}] attacks {target.name} [{target.attack}/{target.health}] for {self.attack} damage."
             )
+            target.take_damage(self.attack)
+            self.take_damage(target.attack)
         else:
             target.take_damage(self.attack)
             log(f"{self.name} attacked {target.name} for {self.attack} damage.")
