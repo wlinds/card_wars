@@ -4,10 +4,13 @@
       "card_type": "minion",
       "name": "Goblin",
       "description": "A small creature with a funky smell.",
+      "card_text": "",
       "mana_cost": 1,
       "attack": 2,
       "health": 2,
-      "race": "Goblin"
+      "race": "Goblin",
+      "ability": "",
+      "buffs": []
     },
 
     {
@@ -15,11 +18,13 @@
       "card_type": "minion",
       "name": "Bobblin The Goblin",
       "description": "A fierce Goblin.",
+      "card_text": "",
       "mana_cost": 3,
       "attack": 4,
       "health": 3,
       "race": "Goblin",
-      "ability": "Rush"
+      "ability": "Rush",
+      "buffs": []
 
     },
 
@@ -28,10 +33,28 @@
       "card_type": "minion",
       "name": "Gnome",
       "description": "A tiny fuckwit.",
+      "card_text": "",
       "mana_cost": 1,
       "attack": 1,
       "health": 1,
-      "race": "Gnome"
+      "race": "Gnome",
+      "ability": "",
+      "buffs": []
+
+    },
+
+    {
+      "card_id": "mgno001",
+      "card_type": "minion",
+      "name": "Grandma Gnome",
+      "description": "",
+      "card_text": "",
+      "mana_cost": 2,
+      "attack": 2,
+      "health": 1,
+      "race": "Gnome",
+      "ability": "",
+      "buffs": ["divine_shield"]
 
     }
 ]
