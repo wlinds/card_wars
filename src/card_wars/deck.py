@@ -15,6 +15,10 @@ class Deck:
     cards: List[Card] = field(default_factory=list)
 
     def add_card(self, card: Card):
+        assert isinstance(
+            card, Card
+        ), "'card' argument must be an instance of the 'Card' class. Did you enter a string?"
+
         if len(self.cards) < self.card_limit:
             # Create a new instance of the card and add it to the deck
             new_card = copy.deepcopy(card)
@@ -95,3 +99,5 @@ if __name__ == "__main__":
     gnome_deck = get_test_deck("goblin")
     random_deck = get_test_deck("random")
     print(random_deck)
+    goblin_deck.burn_deck()
+    goblin_deck.add_card("asdf")
