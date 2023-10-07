@@ -23,7 +23,10 @@ class Deck:
             print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
 
     def shuffle(self):
-        random.shuffle(self.cards)
+        if self.cards == []:
+            print("Cannot shuffle empty deck.")
+        else:
+            random.shuffle(self.cards)
 
     def draw_card(self):
         """
