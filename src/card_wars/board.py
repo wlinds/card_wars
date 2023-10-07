@@ -46,3 +46,10 @@ class Board:
         board_str += f"Player 2 Field: {p2_field}\n" if p2_field else "Player 2 Field is empty.\n"
 
         return board_str
+
+    def __len__(self):
+        return sum(1 for _ in self.minions())
+
+    def minions(self):
+        for minion in self.p1_field + self.p2_field:
+            yield minion

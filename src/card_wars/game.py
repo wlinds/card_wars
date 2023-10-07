@@ -32,6 +32,29 @@ class GameSession:
                 p.mana_bar += 1
             p.update_active_mana()
 
+    def apply_aoe_battlecry(self, card_to_play, player_num):
+        player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
+        opponent_field = self.board.p2_field if player_num == 1 else self.board.p1_field
+
+        for buff in card_to_play.buffs:
+            if isinstance(buff, dict) and buff.get("type") == "aoe_battlecry":
+                effect, value, target = buff.get("effect"), buff.get("value"), buff.get("target")
+                # print(f"{target=}, {value=}, {effect=} n\ {card_to_play=}, {player_num=}")
+
+                if effect == "damage":
+                    if target == "all":
+                        for minion in opponent_field + player_field:
+                            minion.take_damage(value)
+                    elif target == "friendly":
+                        for minion in player_field:
+                            minion.take_damage(value)
+                    elif target == "enemy":
+                        for minion in opponent_field:
+                            minion.take_damage(value)
+                elif effect == "healing":
+                    pass
+                    # TODO # Actually I wonder if we should do healing by just using negative values for damage methods(??)
+
     def play_card(self, player_num, card_index):
         """
         Play a card from hand onto Board.
@@ -55,9 +78,12 @@ class GameSession:
                 if isinstance(card_to_play, Minion):
                     player_field.append(card_to_play)
 
+                    # Check for aoe_battlecry #TODO Move and rename this method in separate script (?), have it check for all battlecries
+                    self.apply_aoe_battlecry(card_to_play, player_num)
+
                     log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
-                        f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost}"
+                        f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
                     )
 
                 elif isinstance(card_to_play, Spell):
@@ -155,9 +181,8 @@ class GameSession:
             if target_player_field:
                 target_minion = random.choice(target_player_field)
                 attacking_minion.attack_target(target_minion)  # Use the attack_target method
-
-        self.remove_dead_minions(player_num)
-        self.remove_dead_minions(target_player_num)
+                self.remove_dead_minions(player_num)
+                self.remove_dead_minions(target_player_num)
 
     def remove_dead_minions(self, player_num):
         """
