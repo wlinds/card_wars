@@ -2,6 +2,7 @@ from card_wars import logs
 from card_wars.board import Board
 from card_wars.deck import get_test_deck
 from card_wars.game import GameSession
+from card_wars.import_cards import find_card
 from card_wars.player import Player
 
 
@@ -9,6 +10,10 @@ from card_wars.player import Player
 def goblin_vs_gnomes_test():
     p1 = Player(name="Kaliber", deck=get_test_deck("goblin"))
     p2 = Player(name="Knox", deck=get_test_deck("gnome"))
+
+    p1.deck.burn_deck()
+
+    p1.deck.fill_with_card(find_card("mgno001"))
 
     board = Board()
 
