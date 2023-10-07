@@ -155,9 +155,8 @@ class GameSession:
             if target_player_field:
                 target_minion = random.choice(target_player_field)
                 attacking_minion.attack_target(target_minion)  # Use the attack_target method
-
-        self.remove_dead_minions(player_num)
-        self.remove_dead_minions(target_player_num)
+                self.remove_dead_minions(player_num)
+                self.remove_dead_minions(target_player_num)
 
     def remove_dead_minions(self, player_num):
         """
