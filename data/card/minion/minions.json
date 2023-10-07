@@ -69,7 +69,7 @@
       "health": 7,
       "race": "Dragon",
       "ability": "",
-      "buffs": ["divine_shield", "on_play"]
+      "buffs": ["divine_shield", {"aoe_battlercy": 2, "friendly": 0}]
 
     }
 ]
