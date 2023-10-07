@@ -30,9 +30,22 @@ jobs:
     - name: Display Installed Dependencies
       run: python -m pip freeze
 
+    - name: List Test Files
+      run: ls tests
+
     - name: Run tests
       run: |
         python -m unittest discover -s tests -p "*_test.py"
+
+    - name: Run specific tests
+      run: |
+        python -m unittest tests/aoe_battlecry_test.py
+        python -m unittest tests/board_test.py
+        python -m unittest tests/card_class_test.py
+        python -m unittest tests/card_import_test.py
+        python -m unittest tests/deck_test.py
+        python -m unittest tests/game_test.py
+        python -m unittest tests/weapon_test.py
 
     - name: Run pre-commit
       run: pre-commit run --all-files
