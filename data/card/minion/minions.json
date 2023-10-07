@@ -74,7 +74,7 @@
           "type": "aoe_battlecry",
           "effect": "damage",
           "value": 2,
-          "target": "all"
+          "target": "enemy"
         },
         "divine_shield"
       ]
