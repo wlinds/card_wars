@@ -12,6 +12,7 @@ class Card:
     name: str
     description: str
     mana_cost: int
+    card_text: str
 
 
 @dataclass
