@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 from card_wars.logs import logger
 
@@ -19,8 +20,14 @@ class Minion(Card):
     health: int
     race: str = None
     ability: str = None
+    buffs: List[str] = field(default_factory=list)
 
     def take_damage(self, damage):
+        if "divine_shield" in self.buffs:
+            self.buffs.remove("divine_shield")
+            log(f"{self.name} took no damage but lost divine shield.")
+            return
+
         if damage > 0:
             self.health -= damage
             print(f"{self.name} took {damage} damage.")
@@ -40,6 +47,10 @@ class Minion(Card):
         else:
             target.take_damage(self.attack)
             log(f"{self.name} attacked {target.name} for {self.attack} damage.")
+
+    def __str__(self):
+        str = f"{self.name}: [{self.attack}/{self.health}] Buffs={self.buffs}"
+        return str
 
 
 @dataclass
