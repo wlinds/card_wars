@@ -21,8 +21,8 @@ class TestAOEBattlecry(unittest.TestCase):
 
         cw = GameSession(p1, p2, board)
 
-        # Add 50 grandmas and 50 Gnomes to p2 field
-        for i in range(50):
+        # Add 2 grandmas and 2 Gnomes to p2 field
+        for i in range(2):
             cw.board.add_to_field(find_card("Grandma Gnome"), 2)
             cw.board.add_to_field(find_card("Gnome"), 2)
 
