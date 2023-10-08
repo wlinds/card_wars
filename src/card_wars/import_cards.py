@@ -72,7 +72,6 @@ def find_card(card_id=str):
 
     for card in cards:
         if card.card_id == card_id or card.name == card_id:
-            print(f"{card.name} found.")
             return card
     print(f"Error: {card_id=} not found. Check import_cards and path.")
     return
