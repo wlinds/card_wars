@@ -22,6 +22,21 @@ class GameSession:
 
     game_turn: int = 0
 
+    def get_target(self, all_random=True):
+        print(f"[+]get_target running with {all_random=}")
+
+        if all_random:
+            targets = [self.player1, self.player2]
+            all_minions = self.board.p1_field + self.board.p2_field
+
+            if all_minions:
+                selected_target = random.choice(all_minions)
+            else:
+                selected_target = random.choice(targets)
+
+        print(f"Target selected: {selected_target}")
+        return selected_target
+
     def end_turn(self):
         log(f"Turn {self.game_turn} ended.")
 
@@ -32,15 +47,22 @@ class GameSession:
                 p.mana_bar += 1
             p.update_active_mana()
 
-    def check_battlecry(self, card_to_play, player_num):
+    def check_battlecry(self, card_to_play, player_num, select_target=None):
         player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
         opponent_field = self.board.p2_field if player_num == 1 else self.board.p1_field
 
         for buff in card_to_play.buffs:
+            # Check for deal_damage battlecry
+            if isinstance(buff, dict) and buff.get("type") == "deal_damage":
+                value, target = buff.get("value"), buff.get("target")
+                if target == "any":
+                    assert select_target != None
+                    select_target.take_damage(value)
+                    log(f"{select_target.name} took {value} damage.")
+
             # Check for AoE
             if isinstance(buff, dict) and buff.get("type") == "aoe":
                 effect, value, target = buff.get("effect"), buff.get("value"), buff.get("target")
-                # print(f"{target=}, {value=}, {effect=} n\ {card_to_play=}, {player_num=}")
 
                 if effect == "damage":
                     if target == "all":
@@ -68,7 +90,10 @@ class GameSession:
                     target_minion.attack += attack
                     log(f"{player_field[0].name} received [+{attack}/+{health}]")
 
-    def play_card(self, player_num, card_index):
+        self.remove_dead_minions(1)
+        self.remove_dead_minions(2)
+
+    def play_card(self, player_num, card_index, select_target=None):  # Select target TODO
         """
         Play a card from hand onto Board.
         player_num: 1 or 2 to indicate which player is playing.
@@ -88,15 +113,19 @@ class GameSession:
         if card_to_play:
             if player.active_mana >= card_to_play.mana_cost:
                 if isinstance(card_to_play, Minion):
-                    player_field.append(card_to_play)
-
+                    for buff in card_to_play.buffs:
+                        if isinstance(buff, dict) and buff.get("target") == "any":
+                            print("Must select a target!")
+                            select_target = self.get_target()
+                            break
                     log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
                         f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
                     )
 
-                    # Check for aoe_battlecry #TODO Move and rename this method in separate script (?), have it check for all battlecries
-                    self.check_battlecry(card_to_play, player_num)
+                    self.check_battlecry(card_to_play, player_num, select_target)
+
+                    player_field.append(card_to_play)
 
                 elif isinstance(card_to_play, Spell):
                     cast_spell(player, card_to_play.card_id)
