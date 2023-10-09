@@ -12,7 +12,8 @@ log = logs.logger.info
 @dataclass
 class Player:
     name: str = f"P{random.randint(0,9)}"
-    health: int = 30
+    max_health: int = 30
+    health: int = max_health
     mana_bar: int = 0  # Total mana
     max_mana_bar: int = 10
     active_mana: int = 0  # Disposable mana
@@ -92,6 +93,14 @@ class Player:
         if self.weapon.durability <= 0:
             log(f"{self.weapon.name} was destroyed.")
             self.weapon = None
+
+    def heal(self, value):
+        if value > 0:
+            self.health += value
+            if self.health > self.max_health:
+                self.health = self.max_health  # Cap at max health
+        else:
+            print(f"Invalid heal value: {value}")
 
     def __str__(self):
         return self.name
