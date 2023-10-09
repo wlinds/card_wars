@@ -16,6 +16,12 @@ def goblin_vs_gnomes_test():
     # Init GameSession with the board, player, decks and cards
     cw = GameSession(p1, p2, board)
 
+    for i in range(10):
+        p1.deck.remove_card(i)
+        p2.deck.remove_card(i)
+        p1.deck.fill_with_card("sfro000")
+        p2.deck.fill_with_card("sfro000")
+
     p1.deck.shuffle()
     p2.deck.shuffle()
 
