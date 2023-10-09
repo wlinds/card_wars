@@ -49,6 +49,48 @@
 
     },
 
+    {
+      "card_id": "mgob003",
+      "card_type": "minion",
+      "name": "Prince Gobb",
+      "description": "",
+      "card_text": "Battlecry: Give all friendly Goblin [+2/+2].",
+      "mana_cost": 5,
+      "attack": 5,
+      "health": 5,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "aoe",
+          "effect": "buff",
+          "value": [2,2],
+          "target": "Goblin"
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgob004",
+      "card_type": "minion",
+      "name": "Goblin Gambler",
+      "description": "",
+      "card_text": "Battlecry: Draw a card.",
+      "mana_cost": 1,
+      "attack": 1,
+      "health": 1,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "draw",
+          "value": 1
+        }
+      ]
+
+    },
+
 
 
     {
