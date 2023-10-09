@@ -35,9 +35,15 @@ class Player:
         else:
             print(f"Invalid damage value: {damage}")
 
-    def update_active_mana(self):
-        """Should be called at the beginning of each turn."""
-        self.active_mana = self.mana_bar
+    def update_active_mana(self, n=None):
+        """
+        Should be called at the beginning of each turn.
+        Can also be called to update with any n.
+        """
+        if n is not None:
+            self.active_mana = n
+        else:
+            self.active_mana = self.mana_bar
 
     def equip_weapon(self, weapon: Weapon):
         if isinstance(weapon, Weapon) and self.weapon != None:
