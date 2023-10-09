@@ -59,6 +59,27 @@
     },
 
     {
+      "card_id": "mgno002",
+      "card_type": "minion",
+      "name": "Gnomish Support Agent",
+      "description": "Do you have a ticket?",
+      "card_text": "Battlecry: Give a random friendly minion +1/+1",
+      "mana_cost": 2,
+      "attack": 2,
+      "health": 1,
+      "race": "Gnome",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "buff_friendly",
+          "add_attack": 1,
+          "add_health": 1,
+          "target": "friendly"
+        }
+      ]
+    },
+
+    {
       "card_id": "mdra000",
       "card_type": "minion",
       "name": "Dragonite",
