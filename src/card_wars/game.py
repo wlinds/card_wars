@@ -113,6 +113,10 @@ class GameSession:
             if isinstance(buff, dict) and buff.get("type") == "draw":
                 self.draw_card(player_num)
 
+            # Check for buff_summon
+            if isinstance(buff, dict) and buff.get("type") == "buff_summon":
+                self.board.add_to_field(find_card(buff.get("card_id")), player_num)
+
         self.remove_dead_minions(1)
         self.remove_dead_minions(2)
 
