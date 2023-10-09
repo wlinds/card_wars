@@ -23,7 +23,7 @@ class GameSession:
     game_turn: int = 0
 
     def get_target(self, all_random=True):
-        print(f"[+]get_target running with {all_random=}")
+        print(f"[Target Assist] get_target() running with {all_random=}")
 
         if all_random:
             targets = [self.player1, self.player2]
@@ -78,6 +78,15 @@ class GameSession:
                     pass
                     # TODO # Actually I wonder if we should do healing by just using negative values for damage methods(??)
 
+                elif effect == "buff" and target != "any":
+                    for minion in player_field:
+                        if minion.race == target:
+                            minion.attack += value[0]
+                            minion.health += value[1]
+                            log(
+                                f"{minion.name} received [+{value[0]}/+{value[1]}] from {card_to_play.name}."
+                            )
+
             # Check for buff_friendly
             if isinstance(buff, dict) and buff.get("type") == "buff_friendly":
                 attack, health, target = buff.get("attack"), buff.get("health"), buff.get("target")
@@ -89,6 +98,9 @@ class GameSession:
                     target_minion.health += health
                     target_minion.attack += attack
                     log(f"{player_field[0].name} received [+{attack}/+{health}]")
+
+            if isinstance(buff, dict) and buff.get("type") == "draw":
+                self.draw_card(player_num)
 
         self.remove_dead_minions(1)
         self.remove_dead_minions(2)
