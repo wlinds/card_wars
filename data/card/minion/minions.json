@@ -33,7 +33,7 @@
       "card_type": "minion",
       "name": "Goblin Juggler",
       "description": "Watch out!",
-      "card_text": "Battlecry: Deal 2 damage.",
+      "card_text": "Battlecry: Deal 2 damage. Deathrattle: Deal 1 damage to three random minion.",
       "mana_cost": 3,
       "attack": 3,
       "health": 2,
@@ -44,6 +44,11 @@
           "type": "deal_damage",
           "value": 2,
           "target": "any"
+        },
+        {
+          "type": "deathrattle_damage",
+          "value": 1,
+          "repeat": 3
         }
       ]
 
