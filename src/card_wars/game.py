@@ -23,7 +23,7 @@ class GameSession:
 
     game_turn: int = 0
 
-    def get_target(self, player_num, all_random=True, all_enemy=False):
+    def get_target(self, player_num, all_random=True, all_enemy=False, all_friendly=False):
         selected_target = []
 
         if all_random:
@@ -44,6 +44,13 @@ class GameSession:
                 enemy_minions = self.board.p1_field
                 selected_target.append(self.player1)
                 selected_target.extend(enemy_minions)
+
+        if all_friendly:
+            if player_num == 1:
+                friendly_minions = self.board.p1_field
+                selected_target.append(self.player1)
+                selected_target.extend(friendly_minions)
+
         log(f"[Target Assist running] Selected target: {selected_target}.")
 
         return selected_target
@@ -86,8 +93,14 @@ class GameSession:
                         for minion in opponent_field:
                             minion.take_damage(value)
                 elif effect == "healing":
-                    pass
-                    # TODO # Actually I wonder if we should do healing by just using negative values for damage methods(??)
+                    if target == "friendly":
+                        characters_to_heal = self.get_target(
+                            player_num, all_random=False, all_enemy=False, all_friendly=True
+                        )
+
+                        for character in characters_to_heal:
+                            character.heal(value=value)
+                            log(f"{character.name} was healed for {value}")
 
                 elif effect == "buff" and target != "any":
                     for minion in player_field:
