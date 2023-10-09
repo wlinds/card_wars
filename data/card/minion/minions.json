@@ -169,6 +169,43 @@
     },
 
     {
+      "card_id": "mgno003",
+      "card_type": "minion",
+      "name": "Gnome Rider",
+      "description": "",
+      "card_text": "Battlecry: Summon a 1/1 Beast",
+      "mana_cost": 2,
+      "attack": 1,
+      "health": 1,
+      "race": "Gnome",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "buff_summon",
+          "effect": "summon",
+          "card_id": "mbea000"
+        }
+      ]
+
+    },
+
+
+    {
+      "card_id": "mbea000",
+      "card_type": "minion",
+      "name": "Lil Teddy",
+      "description": "",
+      "card_text": "",
+      "mana_cost": 0,
+      "attack": 1,
+      "health": 1,
+      "race": "Beast",
+      "ability": "",
+      "buffs": []
+
+    },
+
+    {
       "card_id": "mdra000",
       "card_type": "minion",
       "name": "Dragonite",
