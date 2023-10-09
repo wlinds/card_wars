@@ -83,17 +83,25 @@ class Deck:
         """
         Remove all copies of a specified card from the card list based on user input.
         """
-        if isinstance(card_input, str):
+        if isinstance(card_input, int):  # Check if the input is an integer (card index)
+            if 0 <= card_input < len(self.cards):
+                removed_card = self.cards.pop(card_input)
+                print(f"Removed card at index {card_input}: '{removed_card}'")
+            else:
+                print("Invalid card index. Please enter a valid index.")
+        elif isinstance(card_input, str):  # Check if the input is a string (card name)
             card = find_card(card_input)
-        elif isinstance(card_input, Card):
-            card = card_input
+            if card is not None:
+                self.cards = [c for c in self.cards if c.card_id != card.card_id]
+                print(f"Removed all copies of '{card}' from the deck.")
+            else:
+                print(f"Card '{card_input}' not found.")
+        elif isinstance(card_input, Card):  # Check if the input is a Card object
+            card_id = card_input.card_id
+            self.cards = [c for c in self.cards if c.card_id != card_id]
+            print(f"Removed all copies of '{card_input}' from the deck.")
         else:
-            print("Invalid input. Please enter a card name or provide a Card object.")
-            return
-
-        if card is not None:
-            self.cards = [c for c in self.cards if c.card_id != card.card_id]
-            print(f"Removed all copies of '{card}' from the deck.")
+            print("Invalid input. Please enter a card name, card index, or provide a Card object.")
 
     def __str__(self):
         deck_str = f"{self.name} - [{len(self.cards)}/{self.card_limit}] cards:\n"
@@ -158,3 +166,9 @@ if __name__ == "__main__":
 
     _ = get_test_deck("gnome")
     print(_)
+    print(len(_))
+    for i in range(10):
+        _.remove_card(i)
+    print(len(_))
+    _.fill_with_card(find_card("sfro000"))
+    print(len(_))
