@@ -24,8 +24,6 @@ class GameSession:
     game_turn: int = 0
 
     def get_target(self, all_random=True):
-        print(f"[Target Assist] get_target() running with {all_random=}")
-
         if all_random:
             targets = [self.player1, self.player2]
             all_minions = self.board.p1_field + self.board.p2_field
@@ -35,7 +33,9 @@ class GameSession:
             else:
                 selected_target = random.choice(targets)
 
-        print(f"Target selected: {selected_target}")
+        log(
+            f"[Target Assist] get_target() running with {all_random=} Selected target: {selected_target}"
+        )
         return selected_target
 
     def end_turn(self):
@@ -261,6 +261,15 @@ class GameSession:
                 if isinstance(buff, dict) and buff.get("type") == "deathrattle_summon":
                     log(f"{dead_minion.name} triggerd deathrattle:")
                     self.board.add_to_field(find_card(buff.get("card_id")), player_num)
+
+                if isinstance(buff, dict) and buff.get("type") == "deathrattle_damage":
+                    log(f"{dead_minion.name} triggerd deathrattle. Here comes knifes!:")
+                    value, repeat = buff.get("value"), buff.get("repeat", 1)
+                    for i in range(repeat):
+                        target = self.get_target()
+                        target.take_damage(value)
+                        self.remove_dead_minions(1)
+                        self.remove_dead_minions(2)
 
     def __str__(self):
         sep = " "
