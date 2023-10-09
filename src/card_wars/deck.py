@@ -112,8 +112,11 @@ class Deck:
 
 def get_test_deck(deck_type: str = "goblin") -> Deck:
     test_deck = Deck()
+
     if deck_type == "goblin":
-        test_deck.fill_with_card(find_card("mgob000"))
+        gobs = find_card(minion_race="Goblin")
+        for i in range(test_deck.card_limit):
+            test_deck.add_card(gobs[random.randint(0, len(gobs) - 1)])
 
     elif deck_type == "gnome":
         gnomes = find_card(minion_race="Gnome")
