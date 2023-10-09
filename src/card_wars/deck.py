@@ -116,7 +116,9 @@ def get_test_deck(deck_type: str = "goblin") -> Deck:
         test_deck.fill_with_card(find_card("mgob000"))
 
     elif deck_type == "gnome":
-        test_deck.fill_with_card(find_card("mgno000"))
+        gnomes = find_card(minion_race="Gnome")
+        for i in range(test_deck.card_limit):
+            test_deck.add_card(gnomes[random.randint(0, len(gnomes) - 1)])
 
     elif deck_type == "random":
         all_cards_list = get_all_cards()
@@ -131,22 +133,25 @@ def get_test_deck(deck_type: str = "goblin") -> Deck:
 
 
 if __name__ == "__main__":
-    goblin_deck = get_test_deck("goblin")
-    gnome_deck = get_test_deck("goblin")
-    random_deck = get_test_deck("random")
-    print(random_deck)
-    goblin_deck.burn_deck()
-    goblin_deck.add_card("Dragonite3")
-    print(goblin_deck)
-    print(len(goblin_deck))
-    goblin_deck.burn_deck()
-    print(len(goblin_deck))
-    goblin_deck.add_card("asdf")
-    print(len(goblin_deck))
-    goblin_deck.add_card("Gnome")
-    goblin_deck.fill_with_card("Grandma Gnome", fill=-1.5)
-    goblin_deck.fill_with_card("Grandma Gnome", fill=0.5)
-    goblin_deck.fill_with_card(find_card("Grandma Gnome"), fill=9.9)
-    print(len(goblin_deck))
-    goblin_deck.remove_card(find_card("Grandma Gnome"))
-    print(goblin_deck)
+    # goblin_deck = get_test_deck("goblin")
+    # gnome_deck = get_test_deck("goblin")
+    # random_deck = get_test_deck("random")
+    # print(random_deck)
+    # goblin_deck.burn_deck()
+    # goblin_deck.add_card("Dragonite3")
+    # print(goblin_deck)
+    # print(len(goblin_deck))
+    # goblin_deck.burn_deck()
+    # print(len(goblin_deck))
+    # goblin_deck.add_card("asdf")
+    # print(len(goblin_deck))
+    # goblin_deck.add_card("Gnome")
+    # goblin_deck.fill_with_card("Grandma Gnome", fill=-1.5)
+    # goblin_deck.fill_with_card("Grandma Gnome", fill=0.5)
+    # goblin_deck.fill_with_card(find_card("Grandma Gnome"), fill=9.9)
+    # print(len(goblin_deck))
+    # goblin_deck.remove_card(find_card("Grandma Gnome"))
+    # print(goblin_deck)
+
+    _ = get_test_deck("gnome")
+    print(_)
