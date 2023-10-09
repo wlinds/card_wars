@@ -8,12 +8,8 @@ from card_wars.player import Player
 
 @logs.game_state
 def goblin_vs_gnomes_test():
-    p1 = Player(name="Kaliber", deck=get_test_deck("goblin"))
-    p2 = Player(name="Knox", deck=get_test_deck("gnome"))
-
-    p1.deck.burn_deck()
-
-    p1.deck.fill_with_card(find_card("mgno001"))
+    p1 = Player(name="P1 Goblin Player", deck=get_test_deck("goblin"))
+    p2 = Player(name="P2 Gnome Player", deck=get_test_deck("gnome"))
 
     board = Board()
 
@@ -30,7 +26,7 @@ def goblin_vs_gnomes_test():
 
     while p1.health > 0 and p2.health > 0:
         cw.draw_card(1)
-        cw.draw_card(2)
+        cw.draw_card(1)
         cw.draw_card(2)
         cw.draw_card(2)
 
