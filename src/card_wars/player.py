@@ -93,6 +93,9 @@ class Player:
             log(f"{self.weapon.name} was destroyed.")
             self.weapon = None
 
+    def __str__(self):
+        return self.name
+
 
 if __name__ == "__main__":
     test_player = Player(name="Mr. Test     ")
