@@ -29,6 +29,29 @@
     },
 
     {
+      "card_id": "mgob002",
+      "card_type": "minion",
+      "name": "Goblin Juggler",
+      "description": "Watch out!",
+      "card_text": "Battlecry: Deal 2 damage.",
+      "mana_cost": 3,
+      "attack": 3,
+      "health": 2,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "deal_damage",
+          "value": 2,
+          "target": "any"
+        }
+      ]
+
+    },
+
+
+
+    {
       "card_id": "mgno000",
       "card_type": "minion",
       "name": "Gnome",
