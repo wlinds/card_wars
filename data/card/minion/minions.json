@@ -72,9 +72,9 @@
       "buffs": [
         {
           "type": "buff_friendly",
-          "add_attack": 1,
-          "add_health": 1,
-          "target": "friendly"
+          "attack": 1,
+          "health": 1,
+          "target": "random"
         }
       ]
     },
@@ -92,7 +92,7 @@
       "ability": "",
       "buffs": [
         {
-          "type": "aoe_battlecry",
+          "type": "aoe",
           "effect": "damage",
           "value": 2,
           "target": "enemy"
