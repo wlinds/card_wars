@@ -116,6 +116,28 @@
 
     },
 
+    {
+      "card_id": "mgob005",
+      "card_type": "minion",
+      "name": "Goblin Shaman",
+      "description": "",
+      "card_text": "Battlecry: Restore 2 health to all friendly characters.",
+      "mana_cost": 2,
+      "attack": 2,
+      "health": 2,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "aoe",
+          "effect": "healing",
+          "value": 2,
+          "target": "friendly"
+        }
+      ]
+
+    },
+
 
     {
       "card_id": "mgno000",
