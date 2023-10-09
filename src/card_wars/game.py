@@ -4,7 +4,7 @@ from typing import List
 
 from card_wars import logs
 from card_wars.board import Board
-from card_wars.card import Card, Minion, Spell, Weapon, cast_spell
+from card_wars.card import Card, Minion, Spell, Weapon
 from card_wars.import_cards import find_card
 from card_wars.player import Player
 
@@ -23,7 +23,9 @@ class GameSession:
 
     game_turn: int = 0
 
-    def get_target(self, all_random=True):
+    def get_target(self, player_num, all_random=True, all_enemy=False):
+        selected_target = []
+
         if all_random:
             targets = [self.player1, self.player2]
             all_minions = self.board.p1_field + self.board.p2_field
@@ -33,9 +35,17 @@ class GameSession:
             else:
                 selected_target = random.choice(targets)
 
-        log(
-            f"[Target Assist] get_target() running with {all_random=} Selected target: {selected_target}"
-        )
+        if all_enemy:
+            if player_num == 1:
+                enemy_minions = self.board.p2_field
+                selected_target.append(self.player2)
+                selected_target.extend(enemy_minions)
+            else:
+                enemy_minions = self.board.p1_field
+                selected_target.append(self.player1)
+                selected_target.extend(enemy_minions)
+        log(f"[Target Assist running] Selected target: {selected_target}.")
+
         return selected_target
 
     def end_turn(self):
@@ -129,7 +139,7 @@ class GameSession:
                     for buff in card_to_play.buffs:
                         if isinstance(buff, dict) and buff.get("target") == "any":
                             print("Must select a target!")
-                            select_target = self.get_target()
+                            select_target = self.get_target(player_num, all_random=True)
                             break
                     log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
@@ -141,7 +151,7 @@ class GameSession:
                     player_field.append(card_to_play)
 
                 elif isinstance(card_to_play, Spell):
-                    cast_spell(player, card_to_play.card_id)
+                    self.cast_spell(player_num, card_to_play)
 
                 elif isinstance(card_to_play, Weapon):
                     player.equip_weapon(card_to_play)
@@ -154,6 +164,17 @@ class GameSession:
 
         else:
             print("No card at selected index.")
+
+    def cast_spell(self, player_num, card, target=None):
+        log(f"Player {player_num} cast {card.name}")
+
+        if card.card_id == "sfro000":
+            target = self.get_target(player_num=player_num, all_random=False, all_enemy=True)
+            for entity in target:
+                entity.take_damage(card.damage)
+
+            self.remove_dead_minions(1)
+            self.remove_dead_minions(2)
 
     def draw_starting_cards(self, n=3):
         for player_num in [1, 2]:
@@ -251,6 +272,9 @@ class GameSession:
 
         dead_minions = [minion for minion in player_field if minion.health <= 0]
 
+        if dead_minions == None:
+            return
+
         for dead_minion in dead_minions:
             log(f"Player {player_num}'s {dead_minion.name} has died.")
             player_field.remove(dead_minion)
@@ -266,10 +290,11 @@ class GameSession:
                     log(f"{dead_minion.name} triggerd deathrattle. Here comes knifes!:")
                     value, repeat = buff.get("value"), buff.get("repeat", 1)
                     for i in range(repeat):
-                        target = self.get_target()
+                        target = self.get_target(player_num)
                         target.take_damage(value)
-                        self.remove_dead_minions(1)
-                        self.remove_dead_minions(2)
+
+        if dead_minions:
+            self.remove_dead_minions(player_num)
 
     def __str__(self):
         sep = " "
