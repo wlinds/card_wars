@@ -5,6 +5,7 @@ from typing import List
 from card_wars import logs
 from card_wars.board import Board
 from card_wars.card import Card, Minion, Spell, Weapon, cast_spell
+from card_wars.import_cards import find_card
 from card_wars.player import Player
 
 log = logs.logger.info
@@ -254,6 +255,12 @@ class GameSession:
             log(f"Player {player_num}'s {dead_minion.name} has died.")
             player_field.remove(dead_minion)
             player_graveyard.append(dead_minion)
+
+            # Check deathrattles
+            for buff in dead_minion.buffs:
+                if isinstance(buff, dict) and buff.get("type") == "deathrattle_summon":
+                    log(f"{dead_minion.name} triggerd deathrattle:")
+                    self.board.add_to_field(find_card(buff.get("card_id")), player_num)
 
     def __str__(self):
         sep = " "
