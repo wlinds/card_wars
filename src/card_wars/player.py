@@ -22,12 +22,8 @@ class Player:
     hero_power: str = None
     weapon: Optional[Weapon] = None
 
-    def __post_init__(self):
-        # Format name
-        self.name = self.name.strip()
-        self.name = self.name.replace(".", "")
-        self.name = self.name.replace(",", "")
-        self.name = self.name.replace(" ", "_")
+    def __post_init__(self):  # Format name
+        self.name = self.name.strip().replace(".", "").replace(",", "").replace(" ", "_")
 
     def take_damage(self, damage):
         if damage > 0:
