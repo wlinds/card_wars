@@ -23,6 +23,18 @@ class GameSession:
 
     game_turn: int = 0
 
+    def add_to_hand(self, player_num, card):
+        """
+        Add a copy of any card to player hand.
+        """
+        player, player_hand, _, _ = self.get_player(player_num)
+
+        if card is not None:
+            if len(player_hand) < player.max_hand_size:
+                player_hand.append(card)
+            else:
+                log(f"Hand full! {card.name} was discarded.")
+
     def get_target(self, player_num, all_random=True, all_enemy=False, all_friendly=False):
         selected_target = []
 
@@ -65,7 +77,7 @@ class GameSession:
                 p.mana_bar += 1
             p.update_active_mana()
 
-    def get_player_and_fields(self, player_num):
+    def get_player(self, player_num):
         player = self.player1 if player_num == 1 else self.player2
         player_hand = self.player1_hand if player_num == 1 else self.player2_hand
         player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
@@ -73,7 +85,7 @@ class GameSession:
         return player, player_hand, player_field, opponent_field
 
     def check_battlecry(self, card_to_play, player_num, select_target=None):
-        player, player_hand, player_field, opponent_field = self.get_player_and_fields(player_num)
+        player, player_hand, player_field, opponent_field = self.get_player(player_num)
 
         for buff in card_to_play.buffs:
             # Check for deal_damage battlecry
@@ -144,9 +156,7 @@ class GameSession:
                     target = random.choice(minion_pool)
                     target = target.card_id
 
-                if len(player_hand) < player.max_hand_size:
-                    print(f"{target} added to {player.name} hand.")
-                    player_hand.append(find_card(buff.get(target)))
+                    self.add_to_hand(player_num, find_card(buff.get(target)))
 
             # Check for buff_summon
             if isinstance(buff, dict) and buff.get("type") == "buff_summon":
@@ -162,7 +172,7 @@ class GameSession:
         card_index: The index of the card in the player's hand to play.
         """
 
-        player, player_hand, player_field, opponent_field = self.get_player_and_fields(player_num)
+        player, player_hand, player_field, opponent_field = self.get_player(player_num)
 
         if not (0 <= card_index < len(player_hand)):
             print("Invalid card index.")
@@ -228,7 +238,7 @@ class GameSession:
         player_num: 1 or 2 to indicate which player is drawing.
         """
 
-        player, player_hand, _, _ = self.get_player_and_fields(player_num)
+        player, _, _, _ = self.get_player(player_num)
         overdraw_damage = (
             self.player1_overdraw_dmg if player_num == 1 else self.player2_overdraw_dmg
         )
@@ -253,11 +263,7 @@ class GameSession:
         elif isinstance(drawn_card, Spell) or isinstance(drawn_card, Weapon):
             log(f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}")
 
-        if len(player_hand) < player.max_hand_size:
-            player_hand.append(drawn_card)
-
-        else:
-            log(f"Player hand is full! {drawn_card.name} was discarded.")
+        self.add_to_hand(player_num, drawn_card)
 
     def attack_phase(self):
         """
@@ -294,7 +300,7 @@ class GameSession:
         Simulate attacks from one player's minions to the other player's minions.
         """
 
-        _, _, player_field, opponent_field = self.get_player_and_fields(player_num)
+        _, _, player_field, opponent_field = self.get_player(player_num)
 
         for attacking_minion in player_field:
             if opponent_field:
