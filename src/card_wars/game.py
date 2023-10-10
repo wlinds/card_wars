@@ -66,6 +66,8 @@ class GameSession:
             p.update_active_mana()
 
     def check_battlecry(self, card_to_play, player_num, select_target=None):
+        player = self.player1 if player_num == 1 else self.player2
+        player_hand = self.player1_hand if player_num == 1 else self.player2_hand
         player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
         opponent_field = self.board.p2_field if player_num == 1 else self.board.p1_field
 
@@ -130,6 +132,18 @@ class GameSession:
             # Check for draw
             if isinstance(buff, dict) and buff.get("type") == "draw":
                 self.draw_card(player_num)
+
+            # Check for card_generation
+            if isinstance(buff, dict) and buff.get("type") == "generate_card":
+                target = buff.get("target")
+                if target == "random_same_race":
+                    minion_pool = find_card(minion_race=(card_to_play.race))
+                    target = random.choice(minion_pool)
+                    target = target.card_id
+
+                if len(player_hand) < player.max_hand_size:
+                    print(f"{target} added to {player.name} hand.")
+                    player_hand.append(find_card(buff.get(target)))
 
             # Check for buff_summon
             if isinstance(buff, dict) and buff.get("type") == "buff_summon":
