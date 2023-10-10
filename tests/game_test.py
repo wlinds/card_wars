@@ -32,8 +32,6 @@ def goblin_vs_gnomes_test():
 
     while p1.health > 0 and p2.health > 0:
         cw.draw_card(1)
-        cw.draw_card(1)
-        cw.draw_card(2)
         cw.draw_card(2)
 
         # Try to play card at hand index[0] for each active mana
