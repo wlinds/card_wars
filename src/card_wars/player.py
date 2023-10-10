@@ -34,7 +34,7 @@ class Player:
 
     def update_active_mana(self, n=None):
         """
-        Should be called at the beginning of each turn.
+        Called at the beginning of each turn.
         Can also be called to update with any n.
         """
         if n is not None:
@@ -103,8 +103,3 @@ class Player:
 
     def __repr__(self):
         return self.name
-
-
-if __name__ == "__main__":
-    test_player = Player(name="Mr. Test     ")
-    print(test_player.name, "hello")
