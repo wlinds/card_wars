@@ -65,11 +65,15 @@ class GameSession:
                 p.mana_bar += 1
             p.update_active_mana()
 
-    def check_battlecry(self, card_to_play, player_num, select_target=None):
+    def get_player_and_fields(self, player_num):
         player = self.player1 if player_num == 1 else self.player2
         player_hand = self.player1_hand if player_num == 1 else self.player2_hand
         player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
         opponent_field = self.board.p2_field if player_num == 1 else self.board.p1_field
+        return player, player_hand, player_field, opponent_field
+
+    def check_battlecry(self, card_to_play, player_num, select_target=None):
+        player, player_hand, player_field, opponent_field = self.get_player_and_fields(player_num)
 
         for buff in card_to_play.buffs:
             # Check for deal_damage battlecry
@@ -158,9 +162,7 @@ class GameSession:
         card_index: The index of the card in the player's hand to play.
         """
 
-        player = self.player1 if player_num == 1 else self.player2
-        player_hand = self.player1_hand if player_num == 1 else self.player2_hand
-        player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
+        player, player_hand, player_field, opponent_field = self.get_player_and_fields(player_num)
 
         if not (0 <= card_index < len(player_hand)):
             print("Invalid card index.")
@@ -226,8 +228,7 @@ class GameSession:
         player_num: 1 or 2 to indicate which player is drawing.
         """
 
-        player = self.player1 if player_num == 1 else self.player2
-        player_hand = self.player1_hand if player_num == 1 else self.player2_hand
+        player, player_hand, _, _ = self.get_player_and_fields(player_num)
         overdraw_damage = (
             self.player1_overdraw_dmg if player_num == 1 else self.player2_overdraw_dmg
         )
@@ -293,13 +294,12 @@ class GameSession:
         Simulate attacks from one player's minions to the other player's minions.
         """
 
-        player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
-        target_player_field = self.board.p1_field if target_player_num == 1 else self.board.p2_field
+        _, _, player_field, opponent_field = self.get_player_and_fields(player_num)
 
         for attacking_minion in player_field:
-            if target_player_field:
-                target_minion = random.choice(target_player_field)
-                attacking_minion.attack_target(target_minion)  # Use the attack_target method
+            if opponent_field:
+                target_minion = random.choice(opponent_field)
+                attacking_minion.attack_target(target_minion)
                 self.remove_dead_minions(player_num)
                 self.remove_dead_minions(target_player_num)
 
@@ -307,10 +307,6 @@ class GameSession:
         """
         Remove dead minions (health <= 0) from the player's field.
         """
-        if player_num not in [1, 2]:
-            print("Invalid player number. Use 1 or 2.")
-            return
-
         player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
         player_graveyard = self.board.p1_grave if player_num == 1 else self.board.p2_grave
 
