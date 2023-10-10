@@ -17,7 +17,7 @@ class Board:
     p1_grave: List[Card] = field(default_factory=list)
     p2_grave: List[Card] = field(default_factory=list)
 
-    board_space_limit = None  # TODO: Set default limit.
+    max_field_minion: int = 7
 
     def add_to_field(self, minion: Minion, player_num):
         """
