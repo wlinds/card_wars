@@ -18,10 +18,15 @@ class Card:
 @dataclass
 class Minion(Card):
     attack: int
-    health: int
+    max_health: int
+    health: int = None
     race: str = None
     ability: str = None
     buffs: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        if self.health is None:
+            self.health = self.max_health
 
     def take_damage(self, damage):
         if "divine_shield" in self.buffs:
@@ -50,6 +55,9 @@ class Minion(Card):
             target.take_damage(self.attack)
             log(f"{self.name} attacked {target.name} for {self.attack} damage.")
 
+    def heal(self, value):
+        self.health = min(self.health + value, self.max_health)
+
     def __str__(self):
         str = f"{self.name}: [{self.attack}/{self.health}] Buffs={self.buffs}"
         return str
@@ -67,26 +75,3 @@ class Weapon(Card):
     attack: int
     durability: int
     ability: str = None
-
-
-# ----- Spell logic ----- #
-
-# This should probably be replaced by a more general function TODO: Add target
-
-
-def cast_spell(player, card_id):
-    """
-    player: The player object to apply the spell to.
-    player_num: 1 or 2 to indicate which player casts the spell.
-    card_id: id of the spell
-    """
-
-    # Wild Growth
-    if card_id == "snat000":
-        if player.mana_bar >= 0:
-            player.mana_bar += 2  # TODO: Handle case when result is >10
-            print(
-                f"{player.name} cast 'Wild Growth' and increased their mana bar by 2. New mana: {player.mana_bar}"
-            )
-        else:
-            print(f"{player.name} does not have enough mana to cast 'Wild Growth'.")

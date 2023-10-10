@@ -12,7 +12,8 @@ log = logs.logger.info
 @dataclass
 class Player:
     name: str = f"P{random.randint(0,9)}"
-    health: int = 30
+    max_health: int = 30
+    health: int = max_health
     mana_bar: int = 0  # Total mana
     max_mana_bar: int = 10
     active_mana: int = 0  # Disposable mana
@@ -21,23 +22,25 @@ class Player:
     hero_power: str = None
     weapon: Optional[Weapon] = None
 
-    def __post_init__(self):
-        # Format name
-        self.name = self.name.strip()
-        self.name = self.name.replace(".", "")
-        self.name = self.name.replace(",", "")
-        self.name = self.name.replace(" ", "_")
+    def __post_init__(self):  # Format name
+        self.name = self.name.strip().replace(".", "").replace(",", "").replace(" ", "_")
 
     def take_damage(self, damage):
         if damage > 0:
             self.health -= damage
-            log(f"{self.name} takes {damage} damage. Current health: {self.health}")
+            log(f"{self.name} took {damage} damage. [{self.health}/{self.max_health}")
         else:
             print(f"Invalid damage value: {damage}")
 
-    def update_active_mana(self):
-        """Should be called at the beginning of each turn."""
-        self.active_mana = self.mana_bar
+    def update_active_mana(self, n=None):
+        """
+        Called at the beginning of each turn.
+        Can also be called to update with any n.
+        """
+        if n is not None:
+            self.active_mana = n
+        else:
+            self.active_mana = self.mana_bar
 
     def equip_weapon(self, weapon: Weapon):
         if isinstance(weapon, Weapon) and self.weapon != None:
@@ -87,7 +90,16 @@ class Player:
             log(f"{self.weapon.name} was destroyed.")
             self.weapon = None
 
+    def heal(self, value):
+        if value > 0:
+            self.health += value
+            if self.health > self.max_health:
+                self.health = self.max_health  # Cap at max health
+        else:
+            print(f"Invalid heal value: {value}")
 
-if __name__ == "__main__":
-    test_player = Player(name="Mr. Test     ")
-    print(test_player.name, "hello")
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name

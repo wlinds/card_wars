@@ -25,7 +25,7 @@ def read_cards_from(json_file_path):
                         card_text=card_text,
                         mana_cost=card_data["mana_cost"],
                         attack=card_data["attack"],
-                        health=card_data["health"],
+                        max_health=card_data["health"],
                         race=card_data.get("race"),
                         ability=card_data.get("ability"),
                         buffs=buffs,
@@ -63,16 +63,21 @@ def read_cards_from(json_file_path):
     return card_list
 
 
-def find_card(card_id=str):
+def find_card(card_id=None, minion_race=None):
     """
     Find card by search term (card_id) or card_name
     TODO: searching for card_name needs improvements (implement spell check, ignore capital letters etc)
     """
     cards = get_all_cards()
 
-    for card in cards:
-        if card.card_id == card_id or card.name == card_id:
-            return card
+    if card_id:
+        for card in cards:
+            if card.card_id == card_id or card.name == card_id:
+                return card
+
+    if minion_race:
+        return [card for card in cards if isinstance(card, Minion) and card.race == minion_race]
+
     print(f"Error: {card_id=} not found. Check import_cards and path.")
     return
 
@@ -95,3 +100,6 @@ if __name__ == "__main__":
 
     search_by_name = find_card("Goblin")
     print(search_by_name)
+
+    _ = find_card(minion_race="Gnome")
+    print(_)

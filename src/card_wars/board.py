@@ -7,7 +7,6 @@ from card_wars.card import Card, Minion
 log = logs.logger.info
 
 # Class for Board. Only holds current Board (each player has one corresponding field).
-# TODO: Set board space limit.
 
 
 @dataclass
@@ -18,6 +17,8 @@ class Board:
     p1_grave: List[Card] = field(default_factory=list)
     p2_grave: List[Card] = field(default_factory=list)
 
+    max_field_minion: int = 7
+
     def add_to_field(self, minion: Minion, player_num):
         """
         Only for custom card interaction (summoning additional minions).
@@ -26,10 +27,10 @@ class Board:
         if isinstance(minion, Minion):
             player_field = self.p1_field if player_num == 1 else self.p2_field
             player_field.append(minion)
-            log(f"{minion.name} added to P{player_num}'s field.")
+            log(f"{minion.name} summoned to P{player_num}'s field.")
             return
         else:
-            log("Invalid input. Nothing has been added to Board.")
+            raise ValueError("Invalid input. The input minion is not of type Minion.")
 
     def __str__(self):
         def format_minions(minions):

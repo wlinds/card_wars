@@ -29,6 +29,136 @@
     },
 
     {
+      "card_id": "mgob002",
+      "card_type": "minion",
+      "name": "Goblin Juggler",
+      "description": "Watch out!",
+      "card_text": "Battlecry: Deal 2 damage. Deathrattle: Deal 1 damage to three random minion.",
+      "mana_cost": 3,
+      "attack": 3,
+      "health": 2,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "deal_damage",
+          "value": 2,
+          "target": "any"
+        },
+        {
+          "type": "deathrattle_damage",
+          "value": 1,
+          "repeat": 3
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgob003",
+      "card_type": "minion",
+      "name": "Prince Gobb",
+      "description": "",
+      "card_text": "Battlecry: Give all friendly Goblin [+2/+2].",
+      "mana_cost": 5,
+      "attack": 5,
+      "health": 5,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "aoe",
+          "effect": "buff",
+          "value": [2,2],
+          "target": "Goblin"
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgob004",
+      "card_type": "minion",
+      "name": "Goblin Gambler",
+      "description": "",
+      "card_text": "Battlecry: Draw a card.",
+      "mana_cost": 1,
+      "attack": 1,
+      "health": 1,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "draw",
+          "value": 1
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgob005",
+      "card_type": "minion",
+      "name": "Goblin Necromancer",
+      "description": "",
+      "card_text": "Deathrattle: Summon a 2/2 Goblin.",
+      "mana_cost": 2,
+      "attack": 2,
+      "health": 2,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "deathrattle_summon",
+          "card_id": "mgob000"
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgob005",
+      "card_type": "minion",
+      "name": "Goblin Shaman",
+      "description": "",
+      "card_text": "Battlecry: Restore 2 health to all friendly characters.",
+      "mana_cost": 2,
+      "attack": 2,
+      "health": 2,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "aoe",
+          "effect": "healing",
+          "value": 2,
+          "target": "friendly"
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgob006",
+      "card_type": "minion",
+      "name": "Goblin Wingman",
+      "description": "",
+      "card_text": "Battlecry: Add a random Goblin to your hand.",
+      "mana_cost": 3,
+      "attack": 3,
+      "health": 2,
+      "race": "Goblin",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "generate_card",
+          "target": "random_same_race"
+        }
+      ]
+  },
+
+
+    {
       "card_id": "mgno000",
       "card_type": "minion",
       "name": "Gnome",
@@ -59,6 +189,90 @@
     },
 
     {
+      "card_id": "mgno002",
+      "card_type": "minion",
+      "name": "Gnomish Support Agent",
+      "description": "Do you have a ticket?",
+      "card_text": "Battlecry: Give a random friendly minion +1/+1",
+      "mana_cost": 2,
+      "attack": 2,
+      "health": 1,
+      "race": "Gnome",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "buff_friendly",
+          "attack": 1,
+          "health": 1,
+          "target": "random"
+        }
+      ]
+    },
+
+    {
+      "card_id": "mgno003",
+      "card_type": "minion",
+      "name": "Gnome Rider",
+      "description": "",
+      "card_text": "Battlecry: Summon a 1/1 Beast",
+      "mana_cost": 2,
+      "attack": 1,
+      "health": 1,
+      "race": "Gnome",
+      "ability": "",
+      "buffs": [
+        {
+          "type": "buff_summon",
+          "effect": "summon",
+          "card_id": "mbea000"
+        }
+      ]
+
+    },
+
+    {
+      "card_id": "mgnome004",
+      "card_type": "minion",
+      "name": "Grand Gnome",
+      "description": "The grandest gnome of them all.",
+      "card_text": "Battlecry: Add a Frost Nova to your hand.",
+      "mana_cost": 5,
+      "attack": 6,
+      "health": 7,
+      "race": "Gnome",
+      "ability": "Gnomish Magic",
+      "buffs": [
+        {
+          "type": "buff_friendly",
+          "attack": 2,
+          "health": 2,
+          "target": "random"
+        },
+        {
+          "type": "generate_card",
+          "target": "sfro000"
+
+        }
+      ]
+  },
+
+
+    {
+      "card_id": "mbea000",
+      "card_type": "minion",
+      "name": "Lil Teddy",
+      "description": "",
+      "card_text": "",
+      "mana_cost": 0,
+      "attack": 1,
+      "health": 1,
+      "race": "Beast",
+      "ability": "",
+      "buffs": []
+
+    },
+
+    {
       "card_id": "mdra000",
       "card_type": "minion",
       "name": "Dragonite",
@@ -71,7 +285,7 @@
       "ability": "",
       "buffs": [
         {
-          "type": "aoe_battlecry",
+          "type": "aoe",
           "effect": "damage",
           "value": 2,
           "target": "enemy"
