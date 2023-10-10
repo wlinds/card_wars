@@ -46,6 +46,7 @@ class TestAOEBattlecry(unittest.TestCase):
         cw.remove_dead_minions(2)
 
         self.assertEqual(len(cw.board), 2)  # Should only be 2 dragons
+        self.assertEqual(board.p2_field, [])  # P2 Board should be cleared
         print(cw.board)
 
 
