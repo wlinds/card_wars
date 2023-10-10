@@ -155,6 +155,10 @@ class GameSession:
 
         card_to_play = player_hand[card_index]
 
+        if isinstance(card_to_play, Minion) and len(player_field) >= self.board.max_field_minion:
+            print(f"Cannot play {card_to_play.name}. Board is full!")
+            return
+
         if card_to_play:
             if player.active_mana >= card_to_play.mana_cost:
                 if isinstance(card_to_play, Minion):
@@ -227,7 +231,6 @@ class GameSession:
             return
 
         drawn_card = player.deck.draw_card()
-        player_hand.append(drawn_card)
 
         if isinstance(drawn_card, Minion):
             log(
@@ -235,6 +238,12 @@ class GameSession:
             )
         elif isinstance(drawn_card, Spell) or isinstance(drawn_card, Weapon):
             log(f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}")
+
+        if len(player_hand) < player.max_hand_size:
+            player_hand.append(drawn_card)
+
+        else:
+            log(f"Player hand is full! {drawn_card.name} was discarded.")
 
     def attack_phase(self):
         """
