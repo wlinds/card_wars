@@ -78,7 +78,6 @@ class GameSession:
                 if target == "any":
                     assert select_target != None
                     select_target.take_damage(value)
-                    log(f"{select_target.name} took {value} damage.")
 
             # Check for AoE damage
             if isinstance(buff, dict) and buff.get("type") == "aoe":
@@ -235,9 +234,9 @@ class GameSession:
 
         if not player.deck.cards:
             log(
-                f"Player {player_num} attempted do draw a card but has no cards left in their deck! Took {overdraw_damage} penalty damage!"
+                f"Player {player_num} attempted do draw a card but has no cards left in their deck!"
             )
-            player.health -= overdraw_damage
+            player.take_damage(overdraw_damage)
             if player_num == 1:
                 self.player1_overdraw_dmg += 1
             else:
