@@ -18,10 +18,15 @@ class Card:
 @dataclass
 class Minion(Card):
     attack: int
-    health: int
+    max_health: int
+    health: int = None
     race: str = None
     ability: str = None
     buffs: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        if self.health is None:
+            self.health = self.max_health
 
     def take_damage(self, damage):
         if "divine_shield" in self.buffs:
@@ -51,8 +56,7 @@ class Minion(Card):
             log(f"{self.name} attacked {target.name} for {self.attack} damage.")
 
     def heal(self, value):
-        # TODO prevent going over max health, probably add another max_health attribute
-        self.health += value
+        self.health = min(self.health + value, self.max_health)
 
     def __str__(self):
         str = f"{self.name}: [{self.attack}/{self.health}] Buffs={self.buffs}"

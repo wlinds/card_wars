@@ -25,7 +25,7 @@ def read_cards_from(json_file_path):
                         card_text=card_text,
                         mana_cost=card_data["mana_cost"],
                         attack=card_data["attack"],
-                        health=card_data["health"],
+                        max_health=card_data["health"],
                         race=card_data.get("race"),
                         ability=card_data.get("ability"),
                         buffs=buffs,

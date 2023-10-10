@@ -78,7 +78,7 @@ class GameSession:
                     select_target.take_damage(value)
                     log(f"{select_target.name} took {value} damage.")
 
-            # Check for AoE
+            # Check for AoE damage
             if isinstance(buff, dict) and buff.get("type") == "aoe":
                 effect, value, target = buff.get("effect"), buff.get("value"), buff.get("target")
 
@@ -92,6 +92,8 @@ class GameSession:
                     elif target == "enemy":
                         for minion in opponent_field:
                             minion.take_damage(value)
+
+                # Check for AoE healing
                 elif effect == "healing":
                     if target == "friendly":
                         characters_to_heal = self.get_target(
@@ -102,11 +104,13 @@ class GameSession:
                             character.heal(value=value)
                             log(f"{character.name} was healed for {value}")
 
+                # Check fo AoE buff
                 elif effect == "buff" and target != "any":
                     for minion in player_field:
                         if minion.race == target:
-                            minion.attack += value[0]
+                            minion.max_health += value[1]  # TODO
                             minion.health += value[1]
+                            minion.attack += value[0]
                             log(
                                 f"{minion.name} received [+{value[0]}/+{value[1]}] from {card_to_play.name}."
                             )
@@ -123,6 +127,7 @@ class GameSession:
                     target_minion.attack += attack
                     log(f"{player_field[0].name} received [+{attack}/+{health}]")
 
+            # Check for draw
             if isinstance(buff, dict) and buff.get("type") == "draw":
                 self.draw_card(player_num)
 
