@@ -402,12 +402,18 @@ class GameSession:
             (width + 8) * sep
             + f"{self.player2.health}/30 HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
         )
+        add_space = 1 if len(self.player1.deck.cards) < 10 else 0
         game_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards"
-        game_str += (4 + width) * sep + f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
+        game_str += (
+            (4 + width) * sep
+            + (" " * add_space)
+            + f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
+        )
         game_str += f"Player 1 Hand: {len(self.player1_hand)} cards"
         game_str += (5 + width) * sep + f"Player 2 Hand: {len(self.player2_hand)} cards\n"
         game_str += f"Player 1 Board: {len(self.board.p1_field)} minion(s)"
         game_str += (width) * sep + f"Player 2 Board: {len(self.board.p2_field)} minion(s)\n"
+
         # Yeah ik it's kinda cursed but
 
         return game_str
