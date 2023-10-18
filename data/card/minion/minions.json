@@ -10,7 +10,9 @@
       "health": 2,
       "race": "Goblin",
       "ability": "",
-      "buffs": []
+      "battlecry": [],
+      "deathrattle": []
+
     },
 
     {
@@ -24,7 +26,7 @@
       "health": 3,
       "race": "Goblin",
       "ability": "Rush",
-      "buffs": []
+      "battlecry": []
 
     },
 
@@ -33,18 +35,20 @@
       "card_type": "minion",
       "name": "Goblin Juggler",
       "description": "Watch out!",
-      "card_text": "Battlecry: Deal 2 damage. Deathrattle: Deal 1 damage to three random minion.",
-      "mana_cost": 3,
+      "card_text": "Battlecry: Deal 2 damage. Deathrattle: Deal 1 damage to three random characters.",
+      "mana_cost": 2,
       "attack": 3,
       "health": 2,
       "race": "Goblin",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
           "type": "deal_damage",
           "value": 2,
           "target": "any"
-        },
+        }
+      ],
+      "deathrattle": [
         {
           "type": "deathrattle_damage",
           "value": 1,
@@ -65,14 +69,15 @@
       "health": 5,
       "race": "Goblin",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
           "type": "aoe",
           "effect": "buff",
           "value": [2,2],
           "target": "Goblin"
         }
-      ]
+      ],
+      "deathrattle": []
 
     },
 
@@ -87,12 +92,13 @@
       "health": 1,
       "race": "Goblin",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
           "type": "draw",
           "value": 1
         }
-      ]
+      ],
+      "deathrattle": []
 
     },
 
@@ -107,9 +113,10 @@
       "health": 2,
       "race": "Goblin",
       "ability": "",
-      "buffs": [
+      "battlecry": [],
+      "deathrattle": [
         {
-          "type": "deathrattle_summon",
+          "type": "summon",
           "card_id": "mgob000"
         }
       ]
@@ -127,14 +134,15 @@
       "health": 2,
       "race": "Goblin",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
           "type": "aoe",
           "effect": "healing",
           "value": 2,
           "target": "friendly"
         }
-      ]
+      ],
+      "deathrattle": []
 
     },
 
@@ -149,12 +157,13 @@
       "health": 2,
       "race": "Goblin",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
           "type": "generate_card",
           "target": "random_same_race"
         }
-      ]
+      ],
+      "deathrattle": []
   },
 
 
@@ -169,7 +178,8 @@
       "health": 1,
       "race": "Gnome",
       "ability": "",
-      "buffs": []
+      "battlecry": [],
+      "deathrattle": []
 
     },
 
@@ -183,8 +193,9 @@
       "attack": 2,
       "health": 1,
       "race": "Gnome",
-      "ability": "",
-      "buffs": ["divine_shield"]
+      "ability": ["divine_shield"],
+      "battlecry": [],
+      "deathrattle": []
 
     },
 
@@ -199,14 +210,15 @@
       "health": 1,
       "race": "Gnome",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
           "type": "buff_friendly",
           "attack": 1,
           "health": 1,
           "target": "random"
         }
-      ]
+      ],
+      "deathrattle": []
     },
 
     {
@@ -220,13 +232,14 @@
       "health": 1,
       "race": "Gnome",
       "ability": "",
-      "buffs": [
+      "battlecry": [
         {
-          "type": "buff_summon",
+          "type": "summon",
           "effect": "summon",
           "card_id": "mbea000"
         }
-      ]
+      ],
+      "deathrattle": []
 
     },
 
@@ -235,13 +248,13 @@
       "card_type": "minion",
       "name": "Grand Gnome",
       "description": "The grandest gnome of them all.",
-      "card_text": "Battlecry: Add a Frost Nova to your hand.",
+      "card_text": "Battlecry: Give a friendly minion +2/+2 and add a Frost Nova to your hand.",
       "mana_cost": 5,
       "attack": 6,
       "health": 7,
       "race": "Gnome",
-      "ability": "Gnomish Magic",
-      "buffs": [
+      "ability": "",
+      "battlecry": [
         {
           "type": "buff_friendly",
           "attack": 2,
@@ -253,7 +266,8 @@
           "target": "sfro000"
 
         }
-      ]
+      ],
+      "deathrattle": []
   },
 
 
@@ -268,7 +282,8 @@
       "health": 1,
       "race": "Beast",
       "ability": "",
-      "buffs": []
+      "battlecry": [],
+      "deathrattle": []
 
     },
 
@@ -282,16 +297,40 @@
       "attack": 7,
       "health": 7,
       "race": "Dragon",
-      "ability": "",
-      "buffs": [
+      "ability": ["divine_shield"],
+      "battlecry": [
         {
           "type": "aoe",
           "effect": "damage",
           "value": 2,
           "target": "enemy"
-        },
-        "divine_shield"
-      ]
+        }
+      ],
+      "deathrattle": []
+
+    },
+
+    {
+      "card_id": "mdra001",
+      "card_type": "minion",
+      "name": "Hatchling",
+      "description": "How cute!",
+      "card_text": "All friendly dragons have +2 Health.",
+      "mana_cost": 1,
+      "attack": 1,
+      "health": 1,
+      "race": "Dragon",
+      "ability": [
+        {
+          "type": "buff",
+          "target": "friendly",
+          "target_race": "Dragon",
+          "attack": 0,
+          "health": 2
+        }
+      ],
+      "battlecry": [],
+      "deathrattle": []
 
     }
 ]
