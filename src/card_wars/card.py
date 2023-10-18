@@ -21,22 +21,23 @@ class Minion(Card):
     max_health: int
     health: int = None
     race: str = None
-    ability: str = None
-    buffs: List[str] = field(default_factory=list)
+    ability: List[dict] = field(default_factory=list)
+    battlecry: List[dict] = field(default_factory=list)
+    deathrattle: List[dict] = field(default_factory=list)
 
     def __post_init__(self):
         if self.health is None:
             self.health = self.max_health
 
     def take_damage(self, damage):
-        if "divine_shield" in self.buffs:
-            self.buffs.remove("divine_shield")
+        if "divine_shield" in self.ability:
+            self.ability.remove("divine_shield")
             log(f"{self.name} took no damage but lost divine shield.")
             return
 
         if damage > 0:
             self.health -= damage
-            log(f"{self.name} took {damage} damage.")
+            log(f"{self.name} took {damage} damage. [{self.attack}/{self.health}]")
         else:
             print(f"Invalid damage value: {damage}")
 
@@ -59,7 +60,9 @@ class Minion(Card):
         self.health = min(self.health + value, self.max_health)
 
     def __str__(self):
-        str = f"{self.name}: [{self.attack}/{self.health}] Buffs={self.buffs}"
+        str = (
+            f"{self.name}: [{self.attack}/{self.health}] battlecry={self.battlecry}, {self.ability}"
+        )
         return str
 
 
