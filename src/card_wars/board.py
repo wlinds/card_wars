@@ -13,7 +13,6 @@ class FieldList(list):
         super().__init__(*args, **kwargs)
 
     def update_board(self, board):
-        print("update_board running!")
         if self is board.p1_field:
             board.check_board_buffs(self)
         elif self is board.p2_field:
@@ -33,12 +32,10 @@ class FieldList(list):
         self.update_board(board)
 
     def remove(self, item, board):
-        print("debug Removing!!")
         super().remove(item)
         self.update_board(board)
 
     def pop(self, index, board):
-        print("debug Popping!!")
         item = super().pop(index)
         self.update_board(board)
         return item
@@ -73,7 +70,6 @@ class Board:
 
     def check_board_buffs(self, player_field):
         """Called through update_board in FieldList"""
-        print(f"Check board buffs running on {[m.name for m in player_field]}.")
         minions_on_field = [minion for minion in player_field if minion.health > 0]
         buff_list = self.p1_board_buffs if player_field == self.p1_field else self.p2_board_buffs
 
@@ -104,15 +100,12 @@ class Board:
                         # Append any found buffs to Board class buff_list
                         buff_list.append(minion.ability)
 
-        print(f"check_board_buffs finished:")
-        print(buff_list)
-
-        self.apply_board_buffs(player_field, buff_list)
+        if buff_list != []:
+            self.apply_board_buffs(player_field, buff_list)
 
     def apply_board_buffs(self, player_field, buff_list):
-        print("Apply board buffs running.")
+        print(f"Debug: {len(buff_list)} buffs found on board.")
         minions_on_field = [minion for minion in player_field if minion.health > 0]
-        print(f"{len(buff_list)} buffs found on board.")
 
         # Hard coded to health for testing purposes # TODO
         health_to_apply = 0
