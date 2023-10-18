@@ -34,6 +34,19 @@ def test_all_minion():
     print(cw)
     print(cw.board)
 
+    while len(cw.board.p1_field) > 0:
+        for minion in cw.board.p1_field:
+            minion.take_damage(1)
+            cw.remove_dead_minions(1)
+
+    while len(cw.board.p2_field) > 0:
+        for minion in cw.board.p2_field:
+            minion.take_damage(1)
+            cw.remove_dead_minions(2)
+
+    print(cw)
+    print(cw.board)
+
 
 if __name__ == "__main__":
     test_all_minion()
