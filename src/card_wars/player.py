@@ -28,7 +28,7 @@ class Player:
     def take_damage(self, damage):
         if damage > 0:
             self.health -= damage
-            log(f"{self.name} took {damage} damage. [{self.health}/{self.max_health}")
+            log(f"{self.name} took {damage} damage. [{self.health}/{self.max_health}]")
         else:
             print(f"Invalid damage value: {damage}")
 
