@@ -143,6 +143,29 @@ def get_test_deck(deck_type: str = "goblin") -> Deck:
     return test_deck
 
 
+def get_custom_deck():
+    custom_deck = Deck()
+    goblins = find_card(minion_race="Goblin")
+    gnomes = find_card(minion_race="Gnome")
+
+    for i in gnomes:
+        custom_deck.add_card(i.card_id)
+        custom_deck.add_card(i.card_id)
+
+    for i in goblins:
+        custom_deck.add_card(i.card_id)
+        custom_deck.add_card(i.card_id)
+
+    custom_deck.add_card("mdra000")
+    custom_deck.add_card("mdra000")
+    custom_deck.add_card("sfro000")
+    custom_deck.add_card("sfro000")
+
+    custom_deck.shuffle()
+
+    return custom_deck
+
+
 if __name__ == "__main__":
     # goblin_deck = get_test_deck("goblin")
     # gnome_deck = get_test_deck("goblin")
@@ -164,11 +187,14 @@ if __name__ == "__main__":
     # goblin_deck.remove_card(find_card("Grandma Gnome"))
     # print(goblin_deck)
 
-    _ = get_test_deck("gnome")
-    print(_)
-    print(len(_))
-    for i in range(10):
-        _.remove_card(i)
-    print(len(_))
-    _.fill_with_card(find_card("sfro000"))
-    print(len(_))
+    # _ = get_test_deck("gnome")
+    # print(_)
+    # print(len(_))
+    # for i in range(10):
+    #     _.remove_card(i)
+    # print(len(_))
+    # _.fill_with_card(find_card("sfro000"))
+    # print(len(_))
+
+    custom_deck = get_custom_deck()
+    print(custom_deck)
