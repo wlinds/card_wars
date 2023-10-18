@@ -16,8 +16,9 @@ def read_cards_from(json_file_path):
                     card_text = ""
 
                 if card_data.get("card_type") == "minion":
-                    # Convert "buffs" to a list if it exists, or use an empty list by default
-                    buffs = card_data.get("buffs", [])
+                    # Convert "battlecry" to a list if it exists, or use an empty list by default
+                    battlecry = card_data.get("battlecry", [])
+                    deathrattle = card_data.get("deathrattle", [])
                     minion_card = Minion(
                         card_id=card_data["card_id"],
                         name=card_data["name"],
@@ -28,7 +29,8 @@ def read_cards_from(json_file_path):
                         max_health=card_data["health"],
                         race=card_data.get("race"),
                         ability=card_data.get("ability"),
-                        buffs=buffs,
+                        battlecry=battlecry,
+                        deathrattle=deathrattle,
                     )
                     card_list.append(minion_card)
 
@@ -82,13 +84,17 @@ def find_card(card_id=None, minion_race=None):
     return
 
 
-def get_all_cards() -> list:
+def get_all_cards(minions=True, weapons=True, spells=True) -> list:
     """
     Return a list of card objects
     """
-    cards = read_cards_from("data/card/minion/minions.json")
-    cards.extend(read_cards_from("data/card/weapon/weapons.json"))
-    cards.extend(read_cards_from("data/card/spell/spells.json"))
+    cards = []
+    if minions:
+        cards.extend(read_cards_from("data/card/minion/minions.json"))
+    if weapons:
+        cards.extend(read_cards_from("data/card/weapon/weapons.json"))
+    if spells:
+        cards.extend(read_cards_from("data/card/spell/spells.json"))
 
     return cards
 
