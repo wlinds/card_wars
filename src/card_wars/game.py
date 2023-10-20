@@ -326,19 +326,24 @@ class GameSession:
 
         _, _, player_field, opponent_field, _ = self.get_player(player_num)
 
+        # This line below is caused because irregularity in ability value (sometimes dictionary, sometimes string)
         taunt_minions = [
             minion
             for minion in opponent_field
-            if any("taunt" in ability.lower() for ability in minion.ability)
+            if not any(isinstance(ability, dict) for ability in minion.ability)
+            and any("taunt" in str(ability).lower() for ability in minion.ability)
         ]
+
         if taunt_minions:
             for attacking_minion in player_field:
                 for target_minion in taunt_minions:
                     attacking_minion.attack_target(target_minion)
                     self.remove_dead_minions(player_num)
                     self.remove_dead_minions(target_player_num)
+
+                    # Same thing here ugh
                     if not any(
-                        "taunt" in ability.lower()
+                        "taunt" in ability.lower() if isinstance(ability, str) else False
                         for minion in opponent_field
                         for ability in minion.ability
                     ):
