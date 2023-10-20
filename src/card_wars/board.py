@@ -70,7 +70,7 @@ class Board:
 
     def check_board_buffs(self, player_field):
         """Called through update_board in FieldList"""
-        minions_on_field = [minion for minion in player_field if minion.health > 0]
+        minions_on_field = [minion for minion in player_field if minion.health[0] > 0]
         buff_list = self.p1_board_buffs if player_field == self.p1_field else self.p2_board_buffs
 
         # Clear buff list in Board class to avoid applying duplicate buffs when checking board
@@ -78,6 +78,7 @@ class Board:
 
         for minion in minions_on_field:
             for ability in minion.ability:
+                ## // This can be removed - only for debug ##
                 if isinstance(ability, str):
                     if ability == "divine_shield":
                         # No logic needed, handled in Minion take_damage only
@@ -87,6 +88,7 @@ class Board:
                     # Taunt not yet implemented # TODO
                     if ability == "taunt":
                         print("Taunt found!")
+                ## // ##
 
                 elif isinstance(ability, dict):
                     #  Hard coded for testing purposes #TODO make modular for all board buffs
@@ -105,7 +107,7 @@ class Board:
 
     def apply_board_buffs(self, player_field, buff_list):
         print(f"Debug: {len(buff_list)} buffs found on board.")
-        minions_on_field = [minion for minion in player_field if minion.health > 0]
+        minions_on_field = [minion for minion in player_field if minion.health[0] > 0]
 
         # Hard coded to health for testing purposes # TODO
         health_to_apply = 0
@@ -113,7 +115,7 @@ class Board:
             health_to_apply += buffs[0].get("health", 0)
 
         for minion in minions_on_field:
-            minion.health = minion.max_health + health_to_apply
+            minion.health[0] = minion.health[1] + health_to_apply
 
             # TODO this does not take into account that the minion supplying
             # the buffs, also reveives the buffs itself. Must solve this some way.
@@ -132,7 +134,7 @@ class Board:
             else:
                 log(f"Could not summon {minion.name}. Board is full!")
         else:
-            raise ValueError("Invalid input. The input minion is not of type Minion.")
+            raise ValueError("Invalid argument. The input minion is not of type Minion.")
 
     def minions(self):
         for minion in self.p1_field + self.p2_field:
@@ -143,7 +145,7 @@ class Board:
 
     def __str__(self):
         def format_minions(minions):
-            return ", ".join([f"{m.name} [{m.attack}/{m.health}]" for m in minions])
+            return ", ".join([f"{m.name} [{m.attack}/{m.health[0]}]" for m in minions])
 
         board_str = "Minions on board:\n"
         p1_field = format_minions(self.p1_field)
