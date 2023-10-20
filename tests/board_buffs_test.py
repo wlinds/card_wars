@@ -7,7 +7,7 @@ from card_wars.player import Player
 
 
 @logs.game_state
-def hatchlings():
+def main():
     p1 = Player(name="P1 OSS", deck=Deck())
     p2 = Player(name="P2 OSR", deck=Deck())
 
@@ -35,11 +35,10 @@ def hatchlings():
     cw.board.p1_field.pop(0, cw.board)
     cw.board.p1_field.pop(0, cw.board)
     cw.board.p1_field.pop(0, cw.board)
-    cw.board.p1_field.pop(0, cw.board)
 
     print(cw)
     print(cw.board)
 
 
 if __name__ == "__main__":
-    hatchlings()
+    main()
