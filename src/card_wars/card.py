@@ -74,7 +74,7 @@ class Minion(Card):
         self.health[0] = min(self.health[0] + value, self.health[1])
 
     def __str__(self):
-        str = f"{self.name}: [{self.attack}/{self.health[0]}] {self.mana_cost=} {self.battlecry=}, {self.ability=}"
+        str = f"[{self.attack}/{self.health[0]}] Mana: {self.mana_cost}\n{self.card_text}"
         return str
 
 
