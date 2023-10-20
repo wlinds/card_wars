@@ -1,8 +1,9 @@
 import copy
 import json
 import random
+import string
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Union
 
 from card_wars.card import *
 from card_wars.import_cards import find_card, get_all_cards, read_cards_from
@@ -107,6 +108,10 @@ class Deck:
         else:
             print("Invalid input. Please enter a card name, card index, or provide a Card object.")
 
+    def get_deck_distribution(self):
+        ## TODO return mana distribution
+        pass
+
     def __str__(self):
         deck_str = f"{self.name} - [{len(self.cards)}/{self.card_limit}] cards:\n"
 
@@ -126,48 +131,124 @@ class Deck:
 
 
 def get_test_deck(deck_type: str = "goblin") -> Deck:
-    test_deck = Deck()
+    """
+    Returns a deck in random order.
+
+        Args:
+            "goblin", "gnome", "random"
+    """
+
+    deck = Deck()
 
     if deck_type == "goblin":
         gobs = find_card(minion_race="Goblin")
-        for i in range(test_deck.card_limit):
-            test_deck.add_card(gobs[random.randint(0, len(gobs) - 1)])
+        for i in range(deck.card_limit):
+            deck.add_card(gobs[random.randint(0, len(gobs) - 1)])
 
     elif deck_type == "gnome":
         gnomes = find_card(minion_race="Gnome")
-        for i in range(test_deck.card_limit):
-            test_deck.add_card(gnomes[random.randint(0, len(gnomes) - 1)])
+        for i in range(deck.card_limit):
+            deck.add_card(gnomes[random.randint(0, len(gnomes) - 1)])
 
     elif deck_type == "random":
         all_cards_list = get_all_cards()
-        for i in range(test_deck.card_limit):
-            test_deck.add_card(all_cards_list[random.randint(0, len(all_cards_list) - 1)])
+        for i in range(deck.card_limit):
+            deck.add_card(all_cards_list[random.randint(0, len(all_cards_list) - 1)])
 
     else:
         print('Invalid parameter. Try "goblin" or "gnome".')
         return
 
-    return test_deck
+    return deck
 
 
-def get_custom_deck():
-    custom_deck = Deck()
-    goblins = find_card(minion_race="Goblin")
-    gnomes = find_card(minion_race="Gnome")
+def get_custom_deck(card_list: Union[list, str], name: str = None, shuffled=False) -> Deck:
+    """
+    Constructs a custom deck from a list of card_ids or from a serialized string.
+    """
+    if isinstance(card_list, str):
+        print("Converting serialized string to deck.")
+        serializer = DeckSerializer()
+        card_list = serializer.deserialize(card_list)
+        if isinstance(card_list, list):  # Prevent recursion if serializer fails exception
+            return get_custom_deck(card_list, name, shuffled)
 
-    for i in gnomes:
-        custom_deck.add_card(i.card_id)
-        custom_deck.add_card(i.card_id)
+    else:
+        custom_deck = Deck()
 
-    for i in goblins:
-        custom_deck.add_card(i.card_id)
-        custom_deck.add_card(i.card_id)
+        for card_id in card_list:
+            custom_deck.add_card(card_id)
 
-    custom_deck.add_card("mdra000")
-    custom_deck.add_card("mdra000")
-    custom_deck.add_card("sfro000")
-    custom_deck.add_card("sfro000")
+    if shuffled:
+        custom_deck.shuffle()
 
-    custom_deck.shuffle()
+    if custom_deck and name:
+        custom_deck.name = name
 
     return custom_deck
+
+
+class DeckSerializer:
+    """
+    Whenever a new card is added to the json pool,
+    loading old decks with this WILL BREAK. # TODO
+
+    """
+
+    def __init__(self, deck=Deck()):
+        self.deck = deck
+        self.card_id = [card.card_id for card in get_all_cards()]
+        self.mapping = self.generate_mapping(set(self.card_id))
+
+    @staticmethod
+    def generate_mapping(elements):
+        code_length = 1
+        mapping = {}
+
+        # TODO This will only allow up to 62 unique cards, this can be improved by implementing combinations
+        alphabet = string.ascii_letters + string.digits
+
+        for i, element in enumerate(sorted(elements)):
+            if i >= len(alphabet) ** code_length:
+                code_length += 1
+            code = "".join(
+                alphabet[(i // len(alphabet) ** j) % len(alphabet)]
+                for j in range(code_length - 1, -1, -1)
+            )
+            mapping[element] = code
+        return mapping
+
+    def serialize(self):
+        return "".join(
+            self.mapping[element] for element in [card.card_id for card in self.deck.cards]
+        )
+
+    def deserialize(self, short_string):
+        reversed_mapping = {v: k for k, v in self.mapping.items()}
+        try:
+            return [
+                reversed_mapping[short_string[i : i + 1]] for i in range(0, len(short_string), 1)
+            ]
+        except KeyError as e:
+            print(f"Error: {e}. Input string is broken.")
+            return []
+
+
+if __name__ == "__main__":
+    test_deck = get_test_deck("gnome")
+    serializer = DeckSerializer(test_deck)
+
+    shortened_string = serializer.serialize()
+    print(shortened_string)
+
+    deserialized = serializer.deserialize(shortened_string)
+    print(deserialized)
+
+    restored_deck = get_custom_deck(deserialized)
+    print(restored_deck)
+
+    print(get_custom_deck("ddeeffgghhiijjkkllmmnnnnoobbsrr"))
+    # Yeah this formatting looks batshit crazy. #TODO
+
+    mapping_dict = serializer.generate_mapping(serializer.mapping)
+    print(mapping_dict.values())
