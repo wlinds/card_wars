@@ -28,7 +28,9 @@ def test_all_minion():
     for i in range(len(p1.deck) + 1):
         cw.draw_card(1)
         cw.play_card(1, 0)
+        cw.play_card(1, 0)
         cw.draw_card(2)
+        cw.play_card(2, 0)
         cw.play_card(2, 0)
 
     print(cw)
