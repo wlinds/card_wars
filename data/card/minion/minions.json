@@ -25,7 +25,7 @@
       "attack": 4,
       "health": 3,
       "race": "Goblin",
-      "ability": "Rush",
+      "ability": "",
       "battlecry": []
 
     },
@@ -244,7 +244,7 @@
     },
 
     {
-      "card_id": "mgnome004",
+      "card_id": "mgno004",
       "card_type": "minion",
       "name": "Grand Gnome",
       "description": "The grandest gnome of them all.",
