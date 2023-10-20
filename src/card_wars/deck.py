@@ -57,6 +57,10 @@ class Deck:
 
         cards_to_add = max_deck - len(self.cards)
 
+        if cards_to_add < 0:
+            print(f"Cannot add {cards_to_add} cards.")
+            return
+
         for _ in range(cards_to_add):
             new_card = copy.deepcopy(card)
             self.add_card(new_card)
@@ -117,6 +121,9 @@ class Deck:
     def __len__(self):
         return len(self.cards)
 
+    def __getitem__(self, i):
+        return self.cards[i]
+
 
 def get_test_deck(deck_type: str = "goblin") -> Deck:
     test_deck = Deck()
@@ -164,37 +171,3 @@ def get_custom_deck():
     custom_deck.shuffle()
 
     return custom_deck
-
-
-if __name__ == "__main__":
-    # goblin_deck = get_test_deck("goblin")
-    # gnome_deck = get_test_deck("goblin")
-    # random_deck = get_test_deck("random")
-    # print(random_deck)
-    # goblin_deck.burn_deck()
-    # goblin_deck.add_card("Dragonite3")
-    # print(goblin_deck)
-    # print(len(goblin_deck))
-    # goblin_deck.burn_deck()
-    # print(len(goblin_deck))
-    # goblin_deck.add_card("asdf")
-    # print(len(goblin_deck))
-    # goblin_deck.add_card("Gnome")
-    # goblin_deck.fill_with_card("Grandma Gnome", fill=-1.5)
-    # goblin_deck.fill_with_card("Grandma Gnome", fill=0.5)
-    # goblin_deck.fill_with_card(find_card("Grandma Gnome"), fill=9.9)
-    # print(len(goblin_deck))
-    # goblin_deck.remove_card(find_card("Grandma Gnome"))
-    # print(goblin_deck)
-
-    # _ = get_test_deck("gnome")
-    # print(_)
-    # print(len(_))
-    # for i in range(10):
-    #     _.remove_card(i)
-    # print(len(_))
-    # _.fill_with_card(find_card("sfro000"))
-    # print(len(_))
-
-    custom_deck = get_custom_deck()
-    print(custom_deck)
