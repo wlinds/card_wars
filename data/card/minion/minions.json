@@ -332,5 +332,21 @@
       "battlecry": [],
       "deathrattle": []
 
+    },
+
+    {
+      "card_id": "mneu000",
+      "card_type": "minion",
+      "name": "Praetorian Guard",
+      "description": "No roads lead to Rome!",
+      "card_text": "Taunt",
+      "mana_cost": 2,
+      "attack": 1,
+      "health": 5,
+      "race": "Neutral",
+      "ability": ["taunt"],
+      "battlecry": [],
+      "deathrattle": []
+
     }
 ]
