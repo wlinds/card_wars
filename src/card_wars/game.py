@@ -138,8 +138,8 @@ class GameSession:
                 elif effect == "buff" and target != "any":
                     for minion in player_field:
                         if minion.race == target:
-                            minion.max_health += value[1]  # TODO
-                            minion.health += value[1]
+                            minion.health[0] += value[1]
+                            minion.health[1] += value[1]  # TODO
                             minion.attack += value[0]
                             log(
                                 f"{minion.name} received [+{value[0]}/+{value[1]}] from {card_to_play.name}."
@@ -153,7 +153,8 @@ class GameSession:
 
                 if friendly_minions and target == "random":
                     target_minion = random.choice(friendly_minions)
-                    target_minion.health += health
+                    target_minion.health[0] += health
+                    target_minion.health[1] += health
                     target_minion.attack += attack
                     log(f"{target_minion.name} received [+{attack}/+{health}]")
 
@@ -213,7 +214,7 @@ class GameSession:
                             break
                     log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
-                        f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
+                        f"[{card_to_play.attack}/{card_to_play.health[0]}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
                     )
 
                     self.check_battlecry(card_to_play, player_num, select_target)
@@ -277,7 +278,7 @@ class GameSession:
 
         if isinstance(drawn_card, Minion):
             log(
-                f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health}] Mana cost: {drawn_card.mana_cost}"
+                f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health[0]}] Mana cost: {drawn_card.mana_cost}"
             )
         elif isinstance(drawn_card, Spell) or isinstance(drawn_card, Weapon):
             log(f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}")
@@ -361,7 +362,7 @@ class GameSession:
             _,
             player_graveyard,
         ) = self.get_player(player_num)
-        dead_minions = [minion for minion in player_field if minion.health <= 0]
+        dead_minions = [minion for minion in player_field if minion.health[0] <= 0]
 
         if dead_minions == None:
             return
@@ -377,9 +378,12 @@ class GameSession:
         # Then check for deathrattles
         for dead_minion in dead_minions:
             for buff in dead_minion.deathrattle:
+                # Summoning deathrattles
                 if isinstance(buff, dict) and buff.get("type") == "summon":
                     log(f"{dead_minion.name} triggered its deathrattle:")
                     self.board.add_to_field(find_card(buff.get("card_id")), player_num)
+
+                # Deal damage deathrattle
                 if isinstance(buff, dict) and buff.get("type") == "deathrattle_damage":
                     # Minion specific log text. This really should be in another script..
                     if dead_minion.card_id == "mgob002":
@@ -410,12 +414,10 @@ class GameSession:
             + self.player2.name
             + "\n"
         )
-        game_str += (
-            f"{self.player1.health}/30 HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
-        )
+        game_str += f"{self.player1.health}/{self.player1.max_health} HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
         game_str += (
             (width + 8) * sep
-            + f"{self.player2.health}/30 HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
+            + f"{self.player2.health}/{self.player2.max_health} HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
         )
         add_space = 1 if len(self.player1.deck.cards) < 10 else 0
         game_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards"
