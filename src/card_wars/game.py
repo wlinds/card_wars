@@ -20,13 +20,10 @@ class GameSession:
     player2_hand: List[Card] = field(default_factory=list)
     player1_overdraw_dmg: int = 1
     player2_overdraw_dmg: int = 1
-
     game_turn: int = 0
 
     def add_to_hand(self, player_num, card):
-        """
-        Add a copy of any card to player hand.
-        """
+        """Add a copy of any card to player hand."""
         player, player_hand, _, _, _ = self.get_player(player_num)
 
         if card is not None:
@@ -35,31 +32,23 @@ class GameSession:
             else:
                 log(f"Hand full! {card.name} was discarded.")
 
-    def get_all_targets(self, player_num=None):
-        all_targets = []
-        # TODO: Check for taunt
+    def get_all_targets(self, player_num=None) -> list:
+        """
+        Returns all targets if player_num = None,
+        else returns opponent player field minion(s) and opponent player as target.
+        """
+        targets = []
+        targets.extend(self.board.p2_field if player_num == 1 or player_num is None else [])
+        targets.append(self.player2 if player_num == 1 or player_num is None else None)
+        targets.extend(self.board.p1_field if player_num == 2 or player_num is None else [])
+        targets.append(self.player1 if player_num == 2 or player_num is None else None)
 
-        if player_num == 1:
-            for minion in self.board.p2_field:
-                all_targets.append(minion)
-            all_targets.append(self.player2)
-
-        elif player_num == 2:
-            for minion in self.board.p1_field:
-                all_targets.append(minion)
-            all_targets.append(self.player1)
-
-        elif player_num == None:
-            for minion in self.board.p2_field:
-                all_targets.append(minion)
-            for minion in self.board.p1_field:
-                all_targets.append(minion)
-            all_targets.append(self.player2)
-            all_targets.append(self.player1)
-
-        return all_targets
+        return targets
 
     def target_assist(self, player_num, all_random=True, all_enemy=False, all_friendly=False):
+        """
+        Call when an action requires a target but no target is provided.
+        """
         selected_target = []
 
         if all_random:
@@ -199,6 +188,10 @@ class GameSession:
 
         player, player_hand, player_field, opponent_field, _ = self.get_player(player_num)
 
+        # Case when method receives negative index values (for playing last drawn card etc.)
+        if card_index < 0:
+            card_index += len(player_hand)
+
         if not (0 <= card_index < len(player_hand)):
             print("Invalid card index.")
             return
@@ -297,6 +290,7 @@ class GameSession:
         Handle minion deaths and player health deduction.
         """
 
+        # TODO have each player's minion take turn attacking instead
         self.attack_player_minions(player_num=1, target_player_num=2)
         self.attack_player_minions(player_num=2, target_player_num=1)
 
@@ -326,14 +320,35 @@ class GameSession:
         Simulate attacks from one player's minions to the other player's minions.
         """
 
+        # TODO bug where not all minions always attacks (??)
+        # This should be refactored anyway (indcluding attack_phase)
+
         _, _, player_field, opponent_field, _ = self.get_player(player_num)
 
-        for attacking_minion in player_field:
-            if opponent_field:
-                target_minion = random.choice(opponent_field)
-                attacking_minion.attack_target(target_minion)
-                self.remove_dead_minions(player_num)
-                self.remove_dead_minions(target_player_num)
+        taunt_minions = [
+            minion
+            for minion in opponent_field
+            if any("taunt" in ability.lower() for ability in minion.ability)
+        ]
+        if taunt_minions:
+            for attacking_minion in player_field:
+                for target_minion in taunt_minions:
+                    attacking_minion.attack_target(target_minion)
+                    self.remove_dead_minions(player_num)
+                    self.remove_dead_minions(target_player_num)
+                    if not any(
+                        "taunt" in ability.lower()
+                        for minion in opponent_field
+                        for ability in minion.ability
+                    ):
+                        break
+        else:
+            for attacking_minion in player_field:
+                if opponent_field:
+                    target_minion = random.choice(opponent_field)
+                    attacking_minion.attack_target(target_minion)
+                    self.remove_dead_minions(player_num)
+                    self.remove_dead_minions(target_player_num)
 
     def remove_dead_minions(self, player_num):
         """
