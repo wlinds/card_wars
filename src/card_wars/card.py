@@ -37,7 +37,7 @@ class Minion(Card):
 
         if damage > 0:
             self.health -= damage
-            log(f"{self.name} took {damage} damage. [{self.attack}/{self.health}]")
+            log(f"{self.name} took {damage} damage: [{self.attack}/{self.health}]")
         else:
             print(f"Invalid damage value: {damage}")
 
