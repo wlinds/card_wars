@@ -108,20 +108,24 @@ class Deck:
         else:
             print("Invalid input. Please enter a card name, card index, or provide a Card object.")
 
-    def get_deck_distribution(self):
-        ## TODO return mana distribution
-        pass
+    def get_distribution(self):
+        mana_cost = [card.mana_cost for card in self.cards]
+        return mana_cost
 
     def __str__(self):
-        deck_str = f"{self.name} - [{len(self.cards)}/{self.card_limit}] cards:\n"
+        header = f"{self.name} - [{len(self.cards)}/{self.card_limit}] cards:\n\n"
 
+        card_counts = {}
+        deck_str = ""
         for card in self.cards:
-            if card is not None:
-                deck_str += f"  {card.card_id, card.name}\n"
+            if card.card_id in card_counts:
+                card_counts[card.card_id] += 1
+                deck_str += f"  {card_counts[card.card_id]}   {card.card_id}   {card.name}\n"
             else:
-                deck_str += "  (Empty)\n"
+                card_counts[card.card_id] = 1
+                deck_str += f"  1   {card.card_id}   {card.name}\n"
 
-        return deck_str
+        return header + deck_str
 
     def __len__(self):
         return len(self.cards)
@@ -247,8 +251,10 @@ if __name__ == "__main__":
     restored_deck = get_custom_deck(deserialized)
     print(restored_deck)
 
-    print(get_custom_deck("ddeeffgghhiijjkkllmmnnnnoobbsrr"))
+    deck = get_custom_deck("ddeeffgghhiijjkkllmmnnnnoobbsrr")
     # Yeah this formatting looks batshit crazy. #TODO
 
     mapping_dict = serializer.generate_mapping(serializer.mapping)
     print(mapping_dict.values())
+
+    print(deck.get_distribution())
