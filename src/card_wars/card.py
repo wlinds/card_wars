@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import List, Tuple
 
 from card_wars.logs import logger
@@ -10,14 +10,14 @@ log = logger.info
 class Card:
     card_id: str
     name: str
-    description: str
-    card_text: str
+    description: str = ""
+    card_text: str = ""
     mana_cost: int = 0
 
 
 @dataclass
 class Minion(Card):
-    base_stats: Tuple[int, int, int] = (0, 0, 0)
+    base_stats: Tuple[int, int, int] = (0, 0, 0)  # Attack, Health, Mana
     attack: int = 0
     health: List[int] = field(default_factory=lambda: [0, 0])
     ability: List[dict] = field(default_factory=list)
@@ -31,47 +31,82 @@ class Minion(Card):
         self.health[1] = self.base_stats[1]  # Max health
         self.mana_cost = self.base_stats[2]
 
-    def get_minion_attack_value(self):
-        # TODO Check board buffs:
-        # For example "When a friendly Goblin attacks, give it +3 attack"
-        buff_value = 0
-
-        return self.attack + buff_value
-
     def take_damage(self, damage):
-        # // keep this check here until more damage affecting abilities added
+        #  Not sure if necessary to check divine shield and reborn in every take_damage.
+        #  Maybe find better implementation. Should probably put active abilities in a separate attribute anyway.
 
         if "divine_shield" in self.ability and damage > 0:
             self.ability.remove("divine_shield")
             log(f"{self.name} lost Divine Shield.")
             return
 
-        ## //
-
         if damage > 0:
             self.health[0] -= damage
-            log(f"{self.name} took {damage} damage: [{self.attack}/{self.health[0]}]")
-        else:
-            print(f"Invalid damage value: {damage}")
+            if self.health[0] <= 0:
+                log(f"{self.name} died while taking {damage} damage.")
+            else:
+                log(f"{self.name} Took {damage} damage. Now at {self.health[0]} HP")
 
-    def attack_target(self, target):
-        if self.attack <= 0:
-            print(f"{self.name} cannot attack with {self.attack=}")
+        if "reborn" in self.ability and self.health[0] <= 0:
+            self.ability.remove("reborn")
+            self.health = [1, self.base_stats[1]]
+            log(f"{self.name} was reborn with [{self.attack}/{self.health[0]}]")
+
+    def attack_target(self, target, attack_mod=0):
+        atk_val = self.attack + attack_mod
+        if atk_val <= 0:
             return
 
-        elif isinstance(target, Minion):
-            log(
-                f"{self.name} [{self.get_minion_attack_value()}/{self.health[0]}] attacks {target.name} [{target.attack}/{target.health[0]}] for {self.get_minion_attack_value()} damage."
-            )
+        if isinstance(target, Minion):
+            target.take_damage(atk_val)
+            self.take_damage(target.attack)
 
-            target.take_damage(self.get_minion_attack_value())
-            self.take_damage(target.get_minion_attack_value())
+            attacking = f"{self.name} [{atk_val}/{self.health[0]}]"
+            attacked = f"{target.name} [{target.attack}/{target.health[0]}]"
+            log(f"{attacking} attacks {attacked}")
+
         else:
-            target.take_damage(self.get_minion_attack_value())
-            log(f"{self.name} attacked {target.name} for {self.attack} damage.")
+            target.take_damage(atk_val)
+            log(f"{self.name} attacks {target.name} for {atk_val} damage.")
 
     def heal(self, value):
-        self.health[0] = min(self.health[0] + value, self.health[1])
+        old = self.health[0]
+        new = min(old + value, self.health[1])
+        self.health[0] = new
+        log(f"{self.name} was healed for {new - old}.")
+
+    def __add__(self, other):
+        if not isinstance(other, Minion):
+            raise ValueError("Can only merge with another Minion.")
+
+        new_id = f"{self.card_id}_{other.card_id}"
+        new_name = f"{self.name}{other.name}"
+        new_description = f"Amalgam"
+        new_card_text = f"{self.card_text}{other.card_text}"
+
+        new_base_stats = tuple(x + y for x, y in zip(self.base_stats, other.base_stats))
+        new_attack = self.attack + other.attack
+        new_health = [x + y for x, y in zip(self.health, other.health)]
+
+        new_ability = self.ability + other.ability
+        new_battlecry = self.battlecry + other.battlecry
+        new_deathrattle = self.deathrattle + other.deathrattle
+        new_race = self.race if self.race == other.race else "Amalgam"
+
+        return Minion(
+            new_id,
+            new_name,
+            new_description,
+            new_card_text,
+            0,
+            new_base_stats,
+            new_attack,
+            new_health,
+            new_ability,
+            new_battlecry,
+            new_deathrattle,
+            new_race,
+        )
 
     def __str__(self):
         str = f"{self.name} [{self.attack}/{self.health[0]}] Mana: {self.mana_cost}"
@@ -79,11 +114,16 @@ class Minion(Card):
             str += f"\n{self.card_text}"
         return str
 
+    def __repr__(self):
+        class_name = type(self).__name__
+        attributes = asdict(self)
+        return f"{class_name}({', '.join(f'{k}={v}' for k, v in attributes.items())})"
+
 
 @dataclass
 class Spell(Card):
     spell_type: str = "Default"
-    target: int = 0  # 0 = all entities, 1 = enemy entities, 2 = enemy minion only, 3 = player minion only, 4 = player character only etc (?)
+    target: int = 0
     damage: int = 0
 
 
@@ -92,3 +132,27 @@ class Weapon(Card):
     attack: int = 0
     durability: int = 0
     ability: str = None
+
+
+if __name__ == "__main__":
+    # Example card creation
+    Foo = Minion(
+        card_id="0", name="Foo", base_stats=[1, 2, 3], ability=["divine_shield"], race="Foo"
+    )
+    Bar = Minion(card_id="1", name="Bar", base_stats=[1, 2, 3], ability=["reborn"], race="Bar")
+
+    # Merging minions
+    FooBar = Foo + Bar
+
+    # Example attack interaction
+    Bar.attack_target(Foo)
+    Foo.attack_target(Bar)
+    Bar.attack_target(Foo)
+
+    Foo.heal(100)
+    Bar.heal(100)
+
+    print(Foo)
+    print(Bar)
+
+    print(repr(FooBar))
