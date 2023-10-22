@@ -12,7 +12,7 @@ def card_build_test():
     p1 = Player(name="P1 Goblin Player", deck=get_test_deck("goblin"))
 
     # Classic deck for P1 to beat
-    p2 = Player(name="P2 Classic Deck", deck=get_custom_deck())
+    p2 = Player(name="P2 Classic Deck", deck=get_custom_deck("cccc"))
 
     # Shuffle both deck for random order
     p1.deck.shuffle()
