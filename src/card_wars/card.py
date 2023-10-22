@@ -18,6 +18,7 @@ class Card:
 @dataclass
 class Minion(Card):
     base_stats: Tuple[int, int, int] = (0, 0, 0)  # Attack, Health, Mana
+    mod_stats: List[int] = field(default_factory=lambda: [0, 0, 0])
     attack: int = 0
     health: List[int] = field(default_factory=lambda: [0, 0])
     ability: List[dict] = field(default_factory=list)
@@ -30,6 +31,9 @@ class Minion(Card):
         self.health[0] = self.base_stats[1]  # Current health
         self.health[1] = self.base_stats[1]  # Max health
         self.mana_cost = self.base_stats[2]
+
+        # For modifying attack, health and mana
+        self.mod_stats = [0, 0, 0]
 
     def take_damage(self, damage):
         #  Not sure if necessary to check divine shield and reborn in every take_damage.
@@ -45,7 +49,7 @@ class Minion(Card):
             if self.health[0] <= 0:
                 log(f"{self.name} died while taking {damage} damage.")
             else:
-                log(f"{self.name} Took {damage} damage. Now at {self.health[0]} HP")
+                log(f"{self.name} took {damage} damage. Now at {self.health[0]} HP")
 
         if "reborn" in self.ability and self.health[0] <= 0:
             self.ability.remove("reborn")
@@ -58,12 +62,12 @@ class Minion(Card):
             return
 
         if isinstance(target, Minion):
-            target.take_damage(atk_val)
-            self.take_damage(target.attack)
-
             attacking = f"{self.name} [{atk_val}/{self.health[0]}]"
             attacked = f"{target.name} [{target.attack}/{target.health[0]}]"
             log(f"{attacking} attacks {attacked}")
+
+            target.take_damage(atk_val)
+            self.take_damage(target.attack)
 
         else:
             target.take_damage(atk_val)
@@ -79,16 +83,46 @@ class Minion(Card):
         if not isinstance(other, Minion):
             raise ValueError("Can only merge with another Minion.")
 
+        #  card_id is not super important, as the merged minions won't be stored
         new_id = f"{self.card_id}_{other.card_id}"
-        new_name = f"{self.name}{other.name}"
-        new_description = f"Amalgam"
-        new_card_text = f"{self.card_text}{other.card_text}"
 
+        #  name would be fun to implement a very lightweight language model TODO
+        new_name = self.name[:3] + other.name[-3:]
+
+        #  description is really w/e
+        new_description = f"Amalgam"
+        new_card_text = f"{self.card_text} {other.card_text}"
+
+        # just join stats
         new_base_stats = tuple(x + y for x, y in zip(self.base_stats, other.base_stats))
         new_attack = self.attack + other.attack
         new_health = [x + y for x, y in zip(self.health, other.health)]
 
-        new_ability = self.ability + other.ability
+        #  Ok this entire thing below is ridankulous,
+        #  but we need to check for empty strings...
+
+        def is_empty(ability):
+            return not ability or ability == "''"
+
+        if is_empty(self.ability) and is_empty(other.ability):
+            new_ability = ["''"]
+        elif is_empty(self.ability):
+            new_ability = other.ability.copy()
+        elif is_empty(other.ability):
+            new_ability = self.ability.copy()
+        else:
+            new_ability = self.ability.copy()
+            new_ability.extend(other.ability)
+
+        if "''" in new_ability and len(new_ability) > 1:
+            new_ability.remove("''")
+
+        #  We could probably solve this by checking for empty strings earlier.
+        #  // End ridankulös
+
+        #  TODO when both minions have abilities that can be merged,
+        #  we should try to concat the effects of them
+
         new_battlecry = self.battlecry + other.battlecry
         new_deathrattle = self.deathrattle + other.deathrattle
         new_race = self.race if self.race == other.race else "Amalgam"
@@ -100,6 +134,7 @@ class Minion(Card):
             new_card_text,
             0,
             new_base_stats,
+            [0, 0, 0],
             new_attack,
             new_health,
             new_ability,
