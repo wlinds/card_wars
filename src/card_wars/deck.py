@@ -5,7 +5,7 @@ import string
 from dataclasses import dataclass, field
 from typing import List, Union
 
-from card_wars.card import *
+from card_wars.card import Card
 from card_wars.import_cards import find_card, get_all_cards, read_cards_from
 
 
@@ -14,20 +14,30 @@ class Deck:
     name: str = "Default Deck"
     card_limit: int = 30
     cards: List[Card] = field(default_factory=list)
+    copies_allowed: int = 30
 
-    def add_card(self, card: Card):
+    def add_card(self, card: Union[str, Card]):
         """
         Add a copy of any card to deck card list.
         """
+
+        # Find card if input is str (card_id or card_name)
         if isinstance(card, str):
             card = find_card(card)
 
-        if card is not None:
-            if len(self.cards) < self.card_limit:
-                new_card = copy.deepcopy(card)
-                self.cards.append(new_card)
-            else:
-                print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
+        if card is None:
+            return
+
+        if sum(1 for c in self.cards if c.card_id == card.card_id) >= self.copies_allowed:
+            print(f"{self.copies_allowed} copies of {card.name} already in the deck.")
+            return
+
+        if len(self.cards) >= self.card_limit:
+            print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
+            return
+
+        new_card = copy.deepcopy(card)
+        self.cards.append(new_card)
 
     def shuffle(self):
         if self.cards == []:
@@ -63,7 +73,7 @@ class Deck:
             return
 
         for _ in range(cards_to_add):
-            new_card = copy.deepcopy(card)
+            new_card = copy.deepcopy(card)  # TODO not sure if deepcopy is needed here
             self.add_card(new_card)
 
         print(f"Added {cards_to_add} copies of {card}")
