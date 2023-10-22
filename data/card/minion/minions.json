@@ -322,11 +322,14 @@
       "race": "Dragon",
       "ability": [
         {
-          "type": "buff",
+          "type": "board_buff",
           "target": "friendly",
           "target_race": "Dragon",
           "attack": 0,
           "health": 2
+        },
+        {"type": "not_board_buff",
+        "target": "for debugging"
         }
       ],
       "battlecry": [],
@@ -345,6 +348,31 @@
       "health": 5,
       "race": "Neutral",
       "ability": ["taunt"],
+      "battlecry": [],
+      "deathrattle": []
+
+    },
+
+
+    {
+      "card_id": "mdem000",
+      "card_type": "minion",
+      "name": "Belsebub",
+      "description": "",
+      "card_text": "All enemy minion have -1 Attack.",
+      "mana_cost": 3,
+      "attack": 3,
+      "health": 3,
+      "race": "Demon",
+      "ability": [
+        {
+          "type": "board_buff",
+          "target": "enemy",
+          "target_race": "all",
+          "attack": -1,
+          "health": 0
+        }
+      ],
       "battlecry": [],
       "deathrattle": []
 
