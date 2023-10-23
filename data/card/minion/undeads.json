@@ -1,0 +1,39 @@
+[
+    {
+      "card_id": "mund000",
+      "card_type": "minion",
+      "name": "Ghoul",
+      "description": "A small creature with a rotten smell.",
+      "card_text": "Reborn",
+      "mana_cost": 1,
+      "attack": 1,
+      "health": 1,
+      "race": "Unded",
+      "ability": "reborn",
+      "battlecry": [],
+      "deathrattle": []
+
+    },
+
+    {
+      "card_id": "mund001",
+      "card_type": "minion",
+      "name": "Bonebrawler",
+      "description": "",
+      "card_text": "Deathrattle: For each minion destroyed by this, add a Bone to your hand.",
+      "mana_cost": 3,
+      "attack": 4,
+      "health": 3,
+      "race": "Undead",
+      "ability": "",
+      "battlecry": [],
+      "deathrattle": 
+        [
+          {
+            "type": "generate_card",
+            "target": "card_id_todo",
+            "repeat": "todo: track minion kill count"
+          }
+        ]
+    }
+]

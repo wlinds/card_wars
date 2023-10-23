@@ -31,5 +31,16 @@
       "spell_type": "nature",
       "target": 4,
       "damage": 0
+    },
+
+    {
+      "card_id": "sund000",
+      "card_type": "spell",
+      "name": "Bone",
+      "description": "Give a friendly minion +1/+1",
+      "mana_cost": 0,
+      "spell_type": "undead",
+      "target": "friendly minion",
+      "value": [1,1]
     }
 ]
