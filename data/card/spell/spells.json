@@ -41,6 +41,6 @@
       "mana_cost": 0,
       "spell_type": "undead",
       "target": "friendly minion",
-      "value": [1,1]
+      "damage": [1,1]
     }
 ]
