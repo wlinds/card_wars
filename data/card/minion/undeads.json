@@ -27,11 +27,11 @@
       "race": "Undead",
       "ability": "",
       "battlecry": [],
-      "deathrattle": 
+      "deathrattle":
         [
           {
             "type": "generate_card",
-            "target": "card_id_todo",
+            "target": "sund000",
             "repeat": "todo: track minion kill count"
           }
         ]
