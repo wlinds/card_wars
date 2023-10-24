@@ -77,7 +77,7 @@ class Player:
 
         elif isinstance(target, Minion):
             log(
-                f"{self.name} attacked {target.name} [{target.attack}/{target.health}] with {self.weapon.name} for {self.weapon.attack} damage."
+                f"{self.name} attacked {target.name} [{target.attack}/{target.health[0]}] with {self.weapon.name} for {self.weapon.attack} damage."
             )
             target.take_damage(self.weapon.attack)
 
