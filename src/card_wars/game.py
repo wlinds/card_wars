@@ -76,7 +76,8 @@ class GameSession:
                 selected_target.append(self.player1)
                 selected_target.extend(friendly_minions)
 
-        log(f"[Target Assist running] Selected target: {selected_target}.")
+        if isinstance(selected_target, Player):
+            log(f"[Target Assist running] Selected target: {selected_target.name}.")
 
         return selected_target
 
@@ -405,6 +406,17 @@ class GameSession:
 
                         self.remove_dead_minions(1)
                         self.remove_dead_minions(2)
+
+                if isinstance(buff, dict) and buff.get("type") == "share_stat":
+                    stat, target = buff.get("stat"), buff.get("target")
+                    share_stat = getattr(dead_minion, stat)
+                    if share_stat == dead_minion.health and target == "friendly_minion":
+                        if len(player_field) > 0:
+                            m = random.choice(player_field)
+
+                            # TODO - not update stats like this..
+                            m.health[0] += share_stat[1]
+                            m.health[1] += share_stat[1]
 
         if dead_minions:
             self.remove_dead_minions(player_num)
