@@ -3,69 +3,72 @@ import json
 from card_wars.card import Minion, Spell, Weapon
 
 
-def read_cards_from(json_file_path):
+def read_cards_from(path):
     card_list = []
 
     try:
-        with open(json_file_path, "r") as json_file:
-            data = json.load(json_file)
-            for card_data in data:
-                if "card_text" in card_data:
-                    card_text = card_data["card_text"]
+        with open(path, "r") as file:
+            data = json.load(file)
+            for d in data:
+                if "card_text" in d:
+                    card_text = d["card_text"]
                 else:
                     card_text = ""
 
-                if card_data.get("card_type") == "minion":
-                    # Convert "buffs" to a list if it exists, or use an empty list by default
-                    buffs = card_data.get("buffs", [])
+                if d.get("card_type") == "minion":
+                    # Get mechanics if it exists in data, else use empty list
+                    battlecry = d.get("battlecry", [])
+                    deathrattle = d.get("deathrattle", [])
+
+                    base_stats = [d.get("attack", 1), d.get("health", 1), d.get("mana_cost", 0)]
+
                     minion_card = Minion(
-                        card_id=card_data["card_id"],
-                        name=card_data["name"],
-                        description=card_data["description"],
+                        card_id=d["card_id"],
+                        name=d["name"],
+                        base_stats=base_stats,
+                        ability=d.get("ability"),
+                        race=d.get("race"),
+                        battlecry=battlecry,
+                        deathrattle=deathrattle,
+                        description=d["description"],
                         card_text=card_text,
-                        mana_cost=card_data["mana_cost"],
-                        attack=card_data["attack"],
-                        max_health=card_data["health"],
-                        race=card_data.get("race"),
-                        ability=card_data.get("ability"),
-                        buffs=buffs,
                     )
                     card_list.append(minion_card)
 
-                if card_data.get("card_type") == "weapon":
+                if d.get("card_type") == "weapon":
                     weapon_card = Weapon(
-                        card_id=card_data["card_id"],
-                        name=card_data["name"],
-                        description=card_data["description"],
+                        card_id=d["card_id"],
+                        name=d["name"],
+                        description=d["description"],
                         card_text=card_text,
-                        mana_cost=card_data["mana_cost"],
-                        attack=card_data["attack"],
-                        durability=card_data["durability"],
+                        mana_cost=d["mana_cost"],
+                        attack=d["attack"],
+                        durability=d["durability"],
                     )
                     card_list.append(weapon_card)
 
-                elif card_data.get("card_type") == "spell":
+                elif d.get("card_type") == "spell":
                     spell_card = Spell(
-                        card_id=card_data["card_id"],
-                        name=card_data["name"],
-                        description=card_data["description"],
+                        card_id=d["card_id"],
+                        name=d["name"],
+                        description=d["description"],
                         card_text=card_text,
-                        mana_cost=card_data["mana_cost"],
-                        spell_type=card_data["spell_type"],
-                        target=card_data["target"],
-                        damage=card_data["damage"],
+                        mana_cost=d["mana_cost"],
+                        spell_type=d["spell_type"],
+                        target=d["target"],
+                        damage=d["damage"],
                     )
                     card_list.append(spell_card)
 
     except FileNotFoundError:
-        print(f"File not found: {json_file_path}")
+        print(f"File not found: {path}")
 
     return card_list
 
 
 def find_card(card_id=None, minion_race=None):
     """
-    Find card by search term (card_id) or card_name
+    Find card by search term (card_id) or card_name.
     TODO: searching for card_name needs improvements (implement spell check, ignore capital letters etc)
     """
     cards = get_all_cards()
@@ -82,13 +85,17 @@ def find_card(card_id=None, minion_race=None):
     return
 
 
-def get_all_cards() -> list:
+def get_all_cards(minions=True, weapons=True, spells=True) -> list:
     """
     Return a list of card objects
     """
-    cards = read_cards_from("data/card/minion/minions.json")
-    cards.extend(read_cards_from("data/card/weapon/weapons.json"))
-    cards.extend(read_cards_from("data/card/spell/spells.json"))
+    cards = []
+    if minions:
+        cards.extend(read_cards_from("data/card/minion/minions.json"))
+    if weapons:
+        cards.extend(read_cards_from("data/card/weapon/weapons.json"))
+    if spells:
+        cards.extend(read_cards_from("data/card/spell/spells.json"))
 
     return cards
 

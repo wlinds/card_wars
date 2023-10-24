@@ -20,10 +20,35 @@ class GameSession:
     player2_hand: List[Card] = field(default_factory=list)
     player1_overdraw_dmg: int = 1
     player2_overdraw_dmg: int = 1
-
     game_turn: int = 0
 
-    def get_target(self, player_num, all_random=True, all_enemy=False, all_friendly=False):
+    def add_to_hand(self, player_num, card):
+        """Add a copy of any card to player hand."""
+        player, player_hand, _, _, _ = self.get_player(player_num)
+
+        if card is not None:
+            if len(player_hand) < player.max_hand_size:
+                player_hand.append(card)
+            else:
+                log(f"Hand full! {card.name} was discarded.")
+
+    def get_all_targets(self, player_num=None) -> list:
+        """
+        Returns all targets if player_num = None,
+        else returns opponent player field minion(s) and opponent player as target.
+        """
+        targets = []
+        targets.extend(self.board.p2_field if player_num == 1 or player_num is None else [])
+        targets.append(self.player2 if player_num == 1 or player_num is None else None)
+        targets.extend(self.board.p1_field if player_num == 2 or player_num is None else [])
+        targets.append(self.player1 if player_num == 2 or player_num is None else None)
+
+        return targets
+
+    def target_assist(self, player_num, all_random=True, all_enemy=False, all_friendly=False):
+        """
+        Call when an action requires a target but no target is provided.
+        """
         selected_target = []
 
         if all_random:
@@ -51,31 +76,32 @@ class GameSession:
                 selected_target.append(self.player1)
                 selected_target.extend(friendly_minions)
 
-        log(f"[Target Assist running] Selected target: {selected_target}.")
+        if isinstance(selected_target, Player):
+            log(f"[Target Assist running] Selected target: {selected_target.name}.")
 
         return selected_target
 
     def end_turn(self):
-        log(f"Turn {self.game_turn} ended.")
-
         self.game_turn += 1
-
         for p in [self.player1, self.player2]:
             if p.mana_bar < p.max_mana_bar:
                 p.mana_bar += 1
             p.update_active_mana()
+        log(f"Turn {self.game_turn} ended.")
 
-    def get_player_and_fields(self, player_num):
-        player = self.player1 if player_num == 1 else self.player2
-        player_hand = self.player1_hand if player_num == 1 else self.player2_hand
-        player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
-        opponent_field = self.board.p2_field if player_num == 1 else self.board.p1_field
-        return player, player_hand, player_field, opponent_field
+    def get_player(self, player_num):
+        """Returns player, player_hand, player_field, opponent_field, player_graveyard"""
+        p = self.player1 if player_num == 1 else self.player2
+        ph = self.player1_hand if player_num == 1 else self.player2_hand
+        pf = self.board.p1_field if player_num == 1 else self.board.p2_field
+        of = self.board.p2_field if player_num == 1 else self.board.p1_field
+        pg = self.board.p1_grave if player_num == 1 else self.board.p2_grave
+        return p, ph, pf, of, pg
 
     def check_battlecry(self, card_to_play, player_num, select_target=None):
-        player, player_hand, player_field, opponent_field = self.get_player_and_fields(player_num)
+        player, player_hand, player_field, opponent_field, _ = self.get_player(player_num)
 
-        for buff in card_to_play.buffs:
+        for buff in card_to_play.battlecry:
             # Check for deal_damage battlecry
             if isinstance(buff, dict) and buff.get("type") == "deal_damage":
                 value, target = buff.get("value"), buff.get("target")
@@ -101,7 +127,7 @@ class GameSession:
                 # Check for AoE healing
                 elif effect == "healing":
                     if target == "friendly":
-                        characters_to_heal = self.get_target(
+                        characters_to_heal = self.target_assist(
                             player_num, all_random=False, all_enemy=False, all_friendly=True
                         )
 
@@ -113,8 +139,8 @@ class GameSession:
                 elif effect == "buff" and target != "any":
                     for minion in player_field:
                         if minion.race == target:
-                            minion.max_health += value[1]  # TODO
-                            minion.health += value[1]
+                            minion.health[0] += value[1]
+                            minion.health[1] += value[1]  # TODO
                             minion.attack += value[0]
                             log(
                                 f"{minion.name} received [+{value[0]}/+{value[1]}] from {card_to_play.name}."
@@ -128,9 +154,10 @@ class GameSession:
 
                 if friendly_minions and target == "random":
                     target_minion = random.choice(friendly_minions)
-                    target_minion.health += health
+                    target_minion.health[0] += health
+                    target_minion.health[1] += health
                     target_minion.attack += attack
-                    log(f"{player_field[0].name} received [+{attack}/+{health}]")
+                    log(f"{target_minion.name} received [+{attack}/+{health}]")
 
             # Check for draw
             if isinstance(buff, dict) and buff.get("type") == "draw":
@@ -144,12 +171,11 @@ class GameSession:
                     target = random.choice(minion_pool)
                     target = target.card_id
 
-                if len(player_hand) < player.max_hand_size:
-                    print(f"{target} added to {player.name} hand.")
-                    player_hand.append(find_card(buff.get(target)))
+                self.add_to_hand(player_num, find_card(target))
+                log(f"{find_card(target).name} added to P{player_num}'s hand")
 
             # Check for buff_summon
-            if isinstance(buff, dict) and buff.get("type") == "buff_summon":
+            if isinstance(buff, dict) and buff.get("type") == "summon":
                 self.board.add_to_field(find_card(buff.get("card_id")), player_num)
 
         self.remove_dead_minions(1)
@@ -162,7 +188,11 @@ class GameSession:
         card_index: The index of the card in the player's hand to play.
         """
 
-        player, player_hand, player_field, opponent_field = self.get_player_and_fields(player_num)
+        player, player_hand, player_field, opponent_field, _ = self.get_player(player_num)
+
+        # Case when method receives negative index values (for playing last drawn card etc.)
+        if card_index < 0:
+            card_index += len(player_hand)
 
         if not (0 <= card_index < len(player_hand)):
             print("Invalid card index.")
@@ -177,19 +207,20 @@ class GameSession:
         if card_to_play:
             if player.active_mana >= card_to_play.mana_cost:
                 if isinstance(card_to_play, Minion):
-                    for buff in card_to_play.buffs:
+                    for buff in card_to_play.battlecry:
                         if isinstance(buff, dict) and buff.get("target") == "any":
-                            print("Must select a target!")
-                            select_target = self.get_target(player_num, all_random=True)
+                            if select_target == None:
+                                print("Must select a target!")
+                                select_target = self.target_assist(player_num, all_random=True)
                             break
                     log(
                         f"[+] Player {player_num} played: {card_to_play.name} "
-                        f"[{card_to_play.attack}/{card_to_play.health}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
+                        f"[{card_to_play.attack}/{card_to_play.health[0]}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
                     )
 
                     self.check_battlecry(card_to_play, player_num, select_target)
 
-                    player_field.append(card_to_play)
+                    player_field.append(card_to_play, self.board)
 
                 elif isinstance(card_to_play, Spell):
                     self.cast_spell(player_num, card_to_play)
@@ -210,7 +241,7 @@ class GameSession:
         log(f"Player {player_num} cast {card.name}")
 
         if card.card_id == "sfro000":
-            target = self.get_target(player_num=player_num, all_random=False, all_enemy=True)
+            target = self.target_assist(player_num=player_num, all_random=False, all_enemy=True)
             for entity in target:
                 entity.take_damage(card.damage)
 
@@ -228,7 +259,7 @@ class GameSession:
         player_num: 1 or 2 to indicate which player is drawing.
         """
 
-        player, player_hand, _, _ = self.get_player_and_fields(player_num)
+        player, _, _, _, _ = self.get_player(player_num)
         overdraw_damage = (
             self.player1_overdraw_dmg if player_num == 1 else self.player2_overdraw_dmg
         )
@@ -248,16 +279,12 @@ class GameSession:
 
         if isinstance(drawn_card, Minion):
             log(
-                f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health}] Mana cost: {drawn_card.mana_cost}"
+                f"Player {player_num} drew: {drawn_card.name} [{drawn_card.attack}/{drawn_card.health[0]}] Mana cost: {drawn_card.mana_cost}"
             )
         elif isinstance(drawn_card, Spell) or isinstance(drawn_card, Weapon):
             log(f"Player {player_num} drew: {drawn_card.name} Mana cost: {drawn_card.mana_cost}")
 
-        if len(player_hand) < player.max_hand_size:
-            player_hand.append(drawn_card)
-
-        else:
-            log(f"Player hand is full! {drawn_card.name} was discarded.")
+        self.add_to_hand(player_num, drawn_card)
 
     def attack_phase(self):
         """
@@ -265,6 +292,7 @@ class GameSession:
         Handle minion deaths and player health deduction.
         """
 
+        # TODO have each player's minion take turn attacking instead
         self.attack_player_minions(player_num=1, target_player_num=2)
         self.attack_player_minions(player_num=2, target_player_num=1)
 
@@ -294,44 +322,101 @@ class GameSession:
         Simulate attacks from one player's minions to the other player's minions.
         """
 
-        _, _, player_field, opponent_field = self.get_player_and_fields(player_num)
+        # TODO bug where not all minions always attacks (??)
+        # This should be refactored anyway (indcluding attack_phase)
 
-        for attacking_minion in player_field:
-            if opponent_field:
-                target_minion = random.choice(opponent_field)
-                attacking_minion.attack_target(target_minion)
-                self.remove_dead_minions(player_num)
-                self.remove_dead_minions(target_player_num)
+        _, _, player_field, opponent_field, _ = self.get_player(player_num)
+
+        # This line below is caused because irregularity in ability value (sometimes dictionary, sometimes string)
+        taunt_minions = [
+            minion
+            for minion in opponent_field
+            if not any(isinstance(ability, dict) for ability in minion.ability)
+            and any("taunt" in str(ability).lower() for ability in minion.ability)
+        ]
+
+        if taunt_minions:
+            for attacking_minion in player_field:
+                for target_minion in taunt_minions:
+                    attacking_minion.attack_target(target_minion)
+                    self.remove_dead_minions(player_num)
+                    self.remove_dead_minions(target_player_num)
+
+                    # Same thing here ugh
+                    if not any(
+                        "taunt" in ability.lower() if isinstance(ability, str) else False
+                        for minion in opponent_field
+                        for ability in minion.ability
+                    ):
+                        break
+        else:
+            for attacking_minion in player_field:
+                if opponent_field:
+                    target_minion = random.choice(opponent_field)
+                    attacking_minion.attack_target(target_minion)
+                    self.remove_dead_minions(player_num)
+                    self.remove_dead_minions(target_player_num)
 
     def remove_dead_minions(self, player_num):
         """
         Remove dead minions (health <= 0) from the player's field.
         """
-        player_field = self.board.p1_field if player_num == 1 else self.board.p2_field
-        player_graveyard = self.board.p1_grave if player_num == 1 else self.board.p2_grave
-
-        dead_minions = [minion for minion in player_field if minion.health <= 0]
+        (
+            _,
+            _,
+            player_field,
+            _,
+            player_graveyard,
+        ) = self.get_player(player_num)
+        dead_minions = [minion for minion in player_field if minion.health[0] <= 0]
 
         if dead_minions == None:
             return
 
-        for dead_minion in dead_minions:
-            log(f"Player {player_num}'s {dead_minion.name} has died.")
-            player_field.remove(dead_minion)
-            player_graveyard.append(dead_minion)
+        # First remove all minions with hp <= 0
+        for m in dead_minions:
+            log(f"Player {player_num}'s {m.name} has died.")
 
-            # Check deathrattles
-            for buff in dead_minion.buffs:
-                if isinstance(buff, dict) and buff.get("type") == "deathrattle_summon":
-                    log(f"{dead_minion.name} triggerd deathrattle:")
+            # This should probably be a method instead
+            player_field.remove(m, self.board)
+            player_graveyard.append(m)
+
+        # Then check for deathrattles
+        for dead_minion in dead_minions:
+            for buff in dead_minion.deathrattle:
+                # Summoning deathrattles
+                if isinstance(buff, dict) and buff.get("type") == "summon":
+                    log(f"{dead_minion.name} triggered its deathrattle:")
                     self.board.add_to_field(find_card(buff.get("card_id")), player_num)
 
+                # Deal damage deathrattle
                 if isinstance(buff, dict) and buff.get("type") == "deathrattle_damage":
-                    log(f"{dead_minion.name} triggerd deathrattle. Here comes knifes!:")
+                    # Minion specific log text. This really should be in another script..
+                    if dead_minion.card_id == "mgob002":
+                        log(
+                            f"{dead_minion.name} triggered its deathrattle. Here comes {buff.get('repeat', 1)} knifes!:"
+                        )
+                    else:
+                        log(f"{dead_minion.name} triggered its deathrattle!")
                     value, repeat = buff.get("value"), buff.get("repeat", 1)
                     for i in range(repeat):
-                        target = self.get_target(player_num)
+                        all_possible_targets = self.get_all_targets()
+                        target = random.choice(all_possible_targets)
                         target.take_damage(value)
+
+                        self.remove_dead_minions(1)
+                        self.remove_dead_minions(2)
+
+                if isinstance(buff, dict) and buff.get("type") == "share_stat":
+                    stat, target = buff.get("stat"), buff.get("target")
+                    share_stat = getattr(dead_minion, stat)
+                    if share_stat == dead_minion.health and target == "friendly_minion":
+                        if len(player_field) > 0:
+                            m = random.choice(player_field)
+
+                            # TODO - not update stats like this..
+                            m.health[0] += share_stat[1]
+                            m.health[1] += share_stat[1]
 
         if dead_minions:
             self.remove_dead_minions(player_num)
@@ -346,19 +431,23 @@ class GameSession:
             + self.player2.name
             + "\n"
         )
-        game_str += (
-            f"{self.player1.health}/30 HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
-        )
+        game_str += f"{self.player1.health}/{self.player1.max_health} HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
         game_str += (
             (width + 8) * sep
-            + f"{self.player2.health}/30 HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
+            + f"{self.player2.health}/{self.player2.max_health} HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
         )
+        add_space = 1 if len(self.player1.deck.cards) < 10 else 0
         game_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards"
-        game_str += (4 + width) * sep + f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
+        game_str += (
+            (4 + width) * sep
+            + (" " * add_space)
+            + f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
+        )
         game_str += f"Player 1 Hand: {len(self.player1_hand)} cards"
         game_str += (5 + width) * sep + f"Player 2 Hand: {len(self.player2_hand)} cards\n"
         game_str += f"Player 1 Board: {len(self.board.p1_field)} minion(s)"
         game_str += (width) * sep + f"Player 2 Board: {len(self.board.p2_field)} minion(s)\n"
+
         # Yeah ik it's kinda cursed but
 
         return game_str

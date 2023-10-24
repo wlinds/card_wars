@@ -1,10 +1,11 @@
 import copy
 import json
 import random
+import string
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Union
 
-from card_wars.card import *
+from card_wars.card import Card
 from card_wars.import_cards import find_card, get_all_cards, read_cards_from
 
 
@@ -13,20 +14,30 @@ class Deck:
     name: str = "Default Deck"
     card_limit: int = 30
     cards: List[Card] = field(default_factory=list)
+    copies_allowed: int = 30
 
-    def add_card(self, card: Card):
+    def add_card(self, card: Union[str, Card]):
         """
         Add a copy of any card to deck card list.
         """
+
+        # Find card if input is str (card_id or card_name)
         if isinstance(card, str):
             card = find_card(card)
 
-        if card is not None:
-            if len(self.cards) < self.card_limit:
-                new_card = copy.deepcopy(card)
-                self.cards.append(new_card)
-            else:
-                print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
+        if card is None:
+            return
+
+        if sum(1 for c in self.cards if c.card_id == card.card_id) >= self.copies_allowed:
+            print(f"{self.copies_allowed} copies of {card.name} already in the deck.")
+            return
+
+        if len(self.cards) >= self.card_limit:
+            print(f"Deck is full ({self.card_limit} cards). Cannot add more cards.")
+            return
+
+        new_card = copy.deepcopy(card)
+        self.cards.append(new_card)
 
     def shuffle(self):
         if self.cards == []:
@@ -57,8 +68,12 @@ class Deck:
 
         cards_to_add = max_deck - len(self.cards)
 
+        if cards_to_add < 0:
+            print(f"Cannot add {cards_to_add} cards.")
+            return
+
         for _ in range(cards_to_add):
-            new_card = copy.deepcopy(card)
+            new_card = copy.deepcopy(card)  # TODO not sure if deepcopy is needed here
             self.add_card(new_card)
 
         print(f"Added {cards_to_add} copies of {card}")
@@ -103,72 +118,153 @@ class Deck:
         else:
             print("Invalid input. Please enter a card name, card index, or provide a Card object.")
 
+    def get_distribution(self):
+        mana_cost = [card.mana_cost for card in self.cards]
+        return mana_cost
+
     def __str__(self):
-        deck_str = f"{self.name} - [{len(self.cards)}/{self.card_limit}] cards:\n"
+        header = f"{self.name} - [{len(self.cards)}/{self.card_limit}] cards:\n\n"
 
+        card_counts = {}
+        deck_str = ""
         for card in self.cards:
-            if card is not None:
-                deck_str += f"  {card.card_id, card.name}\n"
+            if card.card_id in card_counts:
+                card_counts[card.card_id] += 1
+                deck_str += f"  {card_counts[card.card_id]}   {card.card_id}   {card.name}\n"
             else:
-                deck_str += "  (Empty)\n"
+                card_counts[card.card_id] = 1
+                deck_str += f"  1   {card.card_id}   {card.name}\n"
 
-        return deck_str
+        return header + deck_str
 
     def __len__(self):
         return len(self.cards)
 
+    def __getitem__(self, i):
+        return self.cards[i]
+
 
 def get_test_deck(deck_type: str = "goblin") -> Deck:
-    test_deck = Deck()
+    """
+    Returns a deck in random order.
+
+        Args:
+            "goblin", "gnome", "random"
+    """
+
+    deck = Deck()
 
     if deck_type == "goblin":
         gobs = find_card(minion_race="Goblin")
-        for i in range(test_deck.card_limit):
-            test_deck.add_card(gobs[random.randint(0, len(gobs) - 1)])
+        for i in range(deck.card_limit):
+            deck.add_card(gobs[random.randint(0, len(gobs) - 1)])
 
     elif deck_type == "gnome":
         gnomes = find_card(minion_race="Gnome")
-        for i in range(test_deck.card_limit):
-            test_deck.add_card(gnomes[random.randint(0, len(gnomes) - 1)])
+        for i in range(deck.card_limit):
+            deck.add_card(gnomes[random.randint(0, len(gnomes) - 1)])
 
     elif deck_type == "random":
         all_cards_list = get_all_cards()
-        for i in range(test_deck.card_limit):
-            test_deck.add_card(all_cards_list[random.randint(0, len(all_cards_list) - 1)])
+        for i in range(deck.card_limit):
+            deck.add_card(all_cards_list[random.randint(0, len(all_cards_list) - 1)])
 
     else:
         print('Invalid parameter. Try "goblin" or "gnome".')
         return
 
-    return test_deck
+    return deck
+
+
+def get_custom_deck(card_list: Union[list, str], name: str = None, shuffled=False) -> Deck:
+    """
+    Constructs a custom deck from a list of card_ids or from a serialized string.
+    """
+    if isinstance(card_list, str):
+        print("Converting serialized string to deck.")
+        serializer = DeckSerializer()
+        card_list = serializer.deserialize(card_list)
+        if isinstance(card_list, list):  # Prevent recursion if serializer fails exception
+            return get_custom_deck(card_list, name, shuffled)
+
+    else:
+        custom_deck = Deck()
+
+        for card_id in card_list:
+            custom_deck.add_card(card_id)
+
+    if shuffled:
+        custom_deck.shuffle()
+
+    if custom_deck and name:
+        custom_deck.name = name
+
+    return custom_deck
+
+
+class DeckSerializer:
+    """
+    Whenever a new card is added to the json pool,
+    loading old decks with this WILL BREAK. # TODO
+
+    """
+
+    def __init__(self, deck=Deck()):
+        self.deck = deck
+        self.card_id = [card.card_id for card in get_all_cards()]
+        self.mapping = self.generate_mapping(set(self.card_id))
+
+    @staticmethod
+    def generate_mapping(elements):
+        code_length = 1
+        mapping = {}
+
+        # TODO This will only allow up to 62 unique cards, this can be improved by implementing combinations
+        alphabet = string.ascii_letters + string.digits
+
+        for i, element in enumerate(sorted(elements)):
+            if i >= len(alphabet) ** code_length:
+                code_length += 1
+            code = "".join(
+                alphabet[(i // len(alphabet) ** j) % len(alphabet)]
+                for j in range(code_length - 1, -1, -1)
+            )
+            mapping[element] = code
+        return mapping
+
+    def serialize(self):
+        return "".join(
+            self.mapping[element] for element in [card.card_id for card in self.deck.cards]
+        )
+
+    def deserialize(self, short_string):
+        reversed_mapping = {v: k for k, v in self.mapping.items()}
+        try:
+            return [
+                reversed_mapping[short_string[i : i + 1]] for i in range(0, len(short_string), 1)
+            ]
+        except KeyError as e:
+            print(f"Error: {e}. Input string is broken.")
+            return []
 
 
 if __name__ == "__main__":
-    # goblin_deck = get_test_deck("goblin")
-    # gnome_deck = get_test_deck("goblin")
-    # random_deck = get_test_deck("random")
-    # print(random_deck)
-    # goblin_deck.burn_deck()
-    # goblin_deck.add_card("Dragonite3")
-    # print(goblin_deck)
-    # print(len(goblin_deck))
-    # goblin_deck.burn_deck()
-    # print(len(goblin_deck))
-    # goblin_deck.add_card("asdf")
-    # print(len(goblin_deck))
-    # goblin_deck.add_card("Gnome")
-    # goblin_deck.fill_with_card("Grandma Gnome", fill=-1.5)
-    # goblin_deck.fill_with_card("Grandma Gnome", fill=0.5)
-    # goblin_deck.fill_with_card(find_card("Grandma Gnome"), fill=9.9)
-    # print(len(goblin_deck))
-    # goblin_deck.remove_card(find_card("Grandma Gnome"))
-    # print(goblin_deck)
+    test_deck = get_test_deck("gnome")
+    serializer = DeckSerializer(test_deck)
 
-    _ = get_test_deck("gnome")
-    print(_)
-    print(len(_))
-    for i in range(10):
-        _.remove_card(i)
-    print(len(_))
-    _.fill_with_card(find_card("sfro000"))
-    print(len(_))
+    shortened_string = serializer.serialize()
+    print(shortened_string)
+
+    deserialized = serializer.deserialize(shortened_string)
+    print(deserialized)
+
+    restored_deck = get_custom_deck(deserialized)
+    print(restored_deck)
+
+    deck = get_custom_deck("ddeeffgghhiijjkkllmmnnnnoobbsrr")
+    # Yeah this formatting looks batshit crazy. #TODO
+
+    mapping_dict = serializer.generate_mapping(serializer.mapping)
+    print(mapping_dict.values())
+
+    print(deck.get_distribution())

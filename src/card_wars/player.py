@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from card_wars import logs
 from card_wars.card import Card, Minion, Weapon
-from card_wars.deck import Deck
+from card_wars.deck import Deck, get_test_deck
 
 log = logs.logger.info
 
@@ -28,7 +28,7 @@ class Player:
     def take_damage(self, damage):
         if damage > 0:
             self.health -= damage
-            log(f"{self.name} took {damage} damage. [{self.health}/{self.max_health}")
+            log(f"{self.name} took {damage} damage. [{self.health}/{self.max_health}]")
         else:
             print(f"Invalid damage value: {damage}")
 
@@ -77,7 +77,7 @@ class Player:
 
         elif isinstance(target, Minion):
             log(
-                f"{self.name} attacked {target.name} [{target.attack}/{target.health}] with {self.weapon.name} for {self.weapon.attack} damage."
+                f"{self.name} attacked {target.name} [{target.attack}/{target.health[0]}] with {self.weapon.name} for {self.weapon.attack} damage."
             )
             target.take_damage(self.weapon.attack)
 
@@ -102,4 +102,12 @@ class Player:
         return self.name
 
     def __repr__(self):
-        return self.name
+        class_name = type(self).__name__
+        attributes = [f"{attr}={getattr(self, attr)}" for attr in self.__annotations__.keys()]
+        return f"{class_name}({', '.join(attributes)})"
+
+
+if __name__ == "__main__":
+    p1 = Player()
+    p1.deck = get_test_deck()
+    print(repr(p1))
