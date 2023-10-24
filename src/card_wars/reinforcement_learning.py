@@ -24,14 +24,37 @@ def game_simulation(p1):
         cw.draw_card(1)
         cw.draw_card(2)
 
-        # Try to play card at hand index[0] for each active mana
         # TODO better implementation of which card to play
         # TODO basic logic, also get hand length and evaluate cards in hand for play or not play
 
-        for i in range(p1.active_mana):
-            cw.play_card(1, 0)
-        for i in range(p2.active_mana):
-            cw.play_card(2, 0)
+        get_active_mana = p1.active_mana
+        cards_on_hand = cw.player1_hand
+        if cards_on_hand != []:
+            for card in cards_on_hand:
+                #  TODO Implement card evaluation
+                if card.mana_cost <= p1.active_mana:
+                    idx = cards_on_hand.index(card)
+                    cw.play_card(1, idx)
+
+                #  TODO Optimize mana curve. Punish unspent mana. Reward well spent mana.
+
+        get_active_mana = p2.active_mana
+        cards_on_hand = cw.player2_hand
+        if cards_on_hand != []:
+            for card in cards_on_hand:
+                # Implement card evaluation
+                if card.mana_cost <= p2.active_mana:
+                    idx = cards_on_hand.index(card)
+                    cw.play_card(2, idx)
+
+        if cw.player1.weapon != None:
+            target = cw.target_assist(1, all_random=False, all_enemy=True)
+
+            cw.player1.attack_target(random.choice(target))
+
+        if cw.player2.weapon != None:
+            target = cw.target_assist(2, all_random=False, all_enemy=True)
+            cw.player2.attack_target(random.choice(target))
 
         cw.attack_phase()
 
@@ -43,7 +66,7 @@ def game_simulation(p1):
 
 
 def reset_player(deck_string):
-    deck = get_custom_deck(card_list=deck_string, deck_name=deck_string)
+    deck = get_custom_deck(card_list=deck_string, name=deck_string)
     p1 = Player(name=deck_string, deck=deck)
 
     # p1 = Player(name="P1 Classic Deck", deck=get_test_deck())
@@ -89,7 +112,7 @@ def main(file_path):
         df = pd.DataFrame(columns=["generation", "deck_uid", "win_rate"])
 
     for generation in range(num_generations):
-        for _ in range(200):
+        for _ in range(2):
             # Full random start:
             deck_string = "".join(random.choices(uid_bucket, k=30))
 
@@ -118,7 +141,9 @@ def main(file_path):
 
 
 if __name__ == "__main__":
-    df = main(file_path="data/results/goblin_vs_random.csv")
-    if df:
-        print(df)
-        print(df["win_rate"].mean())
+    df = main(file_path="data/results/goblin_vs_random_2_allow_player_attack.csv")
+    print(df)
+    print(df["win_rate"].mean())
+    print("Top 5 best performing deck:")
+    top_5_decks = df.nlargest(5, "win_rate")
+    print(top_5_decks)
