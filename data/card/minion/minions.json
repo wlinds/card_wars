@@ -376,5 +376,28 @@
       "battlecry": [],
       "deathrattle": []
 
+    },
+
+
+    {
+      "card_id": "mdem001",
+      "card_type": "minion",
+      "name": "Imp Trickster",
+      "description": "",
+      "card_text": "Deathrattle: Give this minion's maximum Health to another friendly minion.",
+      "mana_cost": 4,
+      "attack": 2,
+      "health": 6,
+      "race": "Demon",
+      "ability": [],
+      "battlecry": [],
+      "deathrattle": [
+        {
+          "type": "share_stat",
+          "stat": "health",
+          "target": "friendly_minion"
+        }
+      ]
+
     }
 ]
