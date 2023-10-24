@@ -92,6 +92,7 @@ def get_all_cards(minions=True, weapons=True, spells=True) -> list:
     cards = []
     if minions:
         cards.extend(read_cards_from("data/card/minion/minions.json"))
+        cards.extend(read_cards_from("data/card/minion/undeads.json"))
     if weapons:
         cards.extend(read_cards_from("data/card/weapon/weapons.json"))
     if spells:
