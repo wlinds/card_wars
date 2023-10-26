@@ -22,7 +22,7 @@ class GameSession:
     player2_overdraw_dmg: int = 1
     game_turn: int = 0
 
-    def add_to_hand(self, player_num, card):
+    def add_to_hand(self, player_num, card):  # Has been migrated to Player class
         """Add a copy of any card to player hand."""
         player, player_hand, _, _, _ = self.get_player(player_num)
 
@@ -253,7 +253,7 @@ class GameSession:
             for _ in range(n):
                 self.draw_card(player_num)
 
-    def draw_card(self, player_num):
+    def draw_card(self, player_num):  # Has been migrated to Player class
         """
         Draw a card from deck and add it to hand.
         player_num: 1 or 2 to indicate which player is drawing.
@@ -300,20 +300,20 @@ class GameSession:
         player2_damage = sum(minion.attack for minion in self.board.p2_field)
 
         if player1_damage != 0 or player2_damage != 0:
-            self.player1.health -= player2_damage
-            self.player2.health -= player1_damage
+            self.player1.health[0] -= player2_damage
+            self.player2.health[0] -= player1_damage
 
             if not self.board.p1_field:
                 log("Player 1 has no minions left.")
-                self.player2.health -= player1_damage
+                self.player2.health[0] -= player1_damage
                 log(f"Player 2 dealt {player2_damage} to enemy player.")
 
             if not self.board.p2_field:
                 log("Player 2 has no minions left.")
-                self.player1.health -= player2_damage
+                self.player1.health[0] -= player2_damage
                 log(f"Player 1 dealt {player1_damage} to enemy player.")
 
-            log(f"{self.player1.health=}, {self.player2.health=}")
+            log(f"{self.player1.health[0]=}, {self.player2.health[0]=}")
 
         self.end_turn()
 
