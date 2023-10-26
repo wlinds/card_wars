@@ -8,8 +8,8 @@ log = logger.info
 
 @dataclass
 class Card:
-    card_id: str
-    name: str
+    card_id: str = None
+    name: str = None
     description: str = ""
     card_text: str = ""
     mana_cost: int = 0
