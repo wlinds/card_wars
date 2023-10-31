@@ -433,10 +433,10 @@ class GameSession:
             + self.player2.name
             + "\n"
         )
-        game_str += f"{self.player1.health}/{self.player1.max_health} HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
+        game_str += f"{self.player1.health[0]}/{self.player1.max_health} HP | {self.player1.active_mana}/{self.player1.mana_bar} Mana"
         game_str += (
             (width + 8) * sep
-            + f"{self.player2.health}/{self.player2.max_health} HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
+            + f"{self.player2.health[0]}/{self.player2.max_health} HP | {self.player2.active_mana}/{self.player2.mana_bar} Mana \n \n"
         )
         add_space = 1 if len(self.player1.deck.cards) < 10 else 0
         game_str += f"Player 1 Deck: {len(self.player1.deck.cards)} cards"
