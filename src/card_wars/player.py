@@ -39,16 +39,14 @@ log = logs.logger.info
 class Player(Minion):
     name: str = f"P{random.randint(0,9)}"
     max_health: int = 30
-    # health: HealthValue = field(default_factory=lambda: HealthValue([0, 0]))
-    # health: int = max_health
     mana_bar: int = 0  # Total mana
     max_mana_bar: int = 10
     active_mana: int = 0  # Disposable mana
     deck: Deck = Deck()
-    max_hand_size: int = 10
     hero_power: str = None
     weapon: Optional[Weapon] = None
 
+    max_hand_size: int = 10
     hand: List[Card] = field(default_factory=list)
     overdraw_damage: int = 0
 
@@ -130,6 +128,7 @@ class Player(Minion):
             print("Cannot attack with 0 attack weapon.")
             return
 
+        # This should be merged, no need to handle Player/Minion instances differently
         if isinstance(target, Player):
             log(
                 f"{self.name} attacked {target.name} with {self.weapon.name} for {self.weapon.attack} damage."
