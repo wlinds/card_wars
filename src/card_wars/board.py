@@ -168,7 +168,7 @@ class Board:
             return "Board is empty."
 
         def format_minions(minions):
-            return ", ".join([f"{m.name} [{m.attack}/{m.health[0]}]" for m in minions])
+            return ", ".join([f"{m.name} [{m.get_attack()}/{m.get_health()[0]}]" for m in minions])
 
         board_str = "Minions on board:\n"
         p1_field = format_minions(self.p1_field)
