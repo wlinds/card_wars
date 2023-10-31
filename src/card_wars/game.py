@@ -16,11 +16,12 @@ class GameSession:
     player1: Player
     player2: Player
     board: Board
-    player1_hand: List[Card] = field(default_factory=list)
-    player2_hand: List[Card] = field(default_factory=list)
-    player1_overdraw_dmg: int = 1
-    player2_overdraw_dmg: int = 1
     game_turn: int = 0
+
+    # player1_hand: List[Card] = field(default_factory=list) # Now in Player class
+    # player2_hand: List[Card] = field(default_factory=list)
+    # player1_overdraw_dmg: int = 1 # Now in Player class
+    # player2_overdraw_dmg: int = 1
 
     def add_to_hand(self, player_num, card):  # Has been migrated to Player class
         """Add a copy of any card to player hand."""
@@ -92,7 +93,7 @@ class GameSession:
     def get_player(self, player_num):
         """Returns player, player_hand, player_field, opponent_field, player_graveyard"""
         p = self.player1 if player_num == 1 else self.player2
-        ph = self.player1_hand if player_num == 1 else self.player2_hand
+        ph = p.hand
         pf = self.board.p1_field if player_num == 1 else self.board.p2_field
         of = self.board.p2_field if player_num == 1 else self.board.p1_field
         pg = self.board.p1_grave if player_num == 1 else self.board.p2_grave
@@ -199,6 +200,7 @@ class GameSession:
             return
 
         card_to_play = player_hand[card_index]
+        print(card_to_play)
 
         if isinstance(card_to_play, Minion) and len(player_field) >= self.board.max_field_minion:
             print(f"Cannot play {card_to_play.name}. Board is full!")
@@ -262,19 +264,16 @@ class GameSession:
         """
 
         player, _, _, _, _ = self.get_player(player_num)
-        overdraw_damage = (
-            self.player1_overdraw_dmg if player_num == 1 else self.player2_overdraw_dmg
-        )
 
         if not player.deck.cards:
             log(
                 f"Player {player_num} attempted do draw a card but has no cards left in their deck!"
             )
-            player.take_damage(overdraw_damage)
+            player.take_damage(player.overdraw_damage)
             if player_num == 1:
-                self.player1_overdraw_dmg += 1
+                player.overdraw_damage += 1
             else:
-                self.player2_overdraw_dmg += 1
+                player.overdraw_damage += 1
             return
 
         drawn_card = player.deck.draw_card()
@@ -445,8 +444,8 @@ class GameSession:
             + (" " * add_space)
             + f"Player 2 Deck: {len(self.player2.deck.cards)} cards\n"
         )
-        game_str += f"Player 1 Hand: {len(self.player1_hand)} cards"
-        game_str += (5 + width) * sep + f"Player 2 Hand: {len(self.player2_hand)} cards\n"
+        game_str += f"Player 1 Hand: {len(self.player1.hand)} cards"
+        game_str += (5 + width) * sep + f"Player 2 Hand: {len(self.player2.hand)} cards\n"
         game_str += f"Player 1 Board: {len(self.board.p1_field)} minion(s)"
         game_str += (width) * sep + f"Player 2 Board: {len(self.board.p2_field)} minion(s)\n"
 
