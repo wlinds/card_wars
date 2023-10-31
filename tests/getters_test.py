@@ -20,14 +20,14 @@ def main():
     cw.player2.mana_bar = 20
     cw.end_turn()
 
-    cw.player1_hand.append(find_card("mgno002"))
-    cw.player1_hand.append(find_card("mgno002"))
+    cw.player1.hand.append(find_card("mgno002"))
+    cw.player1.hand.append(find_card("mgno002"))
 
     cw.play_card(1, 0)
     cw.play_card(1, 0)
 
-    cw.player2_hand.append(find_card("mdra001"))
-    cw.player2_hand.append(find_card("mdra001"))
+    cw.player2.hand.append(find_card("mdra001"))
+    cw.player2.hand.append(find_card("mdra001"))
 
     cw.play_card(2, 0)
     cw.play_card(2, 0)

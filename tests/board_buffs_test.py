@@ -18,7 +18,7 @@ def main():
 
     cw.draw_starting_cards(10)
 
-    print(cw.player1_hand[0])
+    print(p1.hand[0])
 
     cw.end_turn()
 

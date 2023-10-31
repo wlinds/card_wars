@@ -30,7 +30,7 @@ def taunt_test():
     cw.add_to_hand(1, find_card("mneu000"))
     cw.add_to_hand(2, find_card("mneu000"))
 
-    print(cw.player1_hand)
+    print(cw.player1.hand)
     cw.play_card(1, -1)
     cw.play_card(2, -1)
 
