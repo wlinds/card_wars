@@ -224,9 +224,11 @@ class GameSession:
 
                 elif isinstance(card_to_play, Spell):
                     self.cast_spell(player_num, card_to_play)
+                    # TODO add to graveyard
 
                 elif isinstance(card_to_play, Weapon):
                     player.equip_weapon(card_to_play)
+                    # TODO add to graveyard
 
                 player.active_mana -= card_to_play.mana_cost
                 del player_hand[card_index]
