@@ -35,6 +35,18 @@ class Minion(Card):
         # For modifying attack, health and mana
         self.mod_stats = [0, 0, 0]
 
+    # Possible error in health below, if minion is buffed to any val and then takes damage,
+    # then looses the buff, should it die or return to 1 hp? We'll have to decide on that TODO
+
+    def get_health(self):
+        return [self.health[0] + self.mod_stats[1], self.health[1] + self.mod_stats[1]]
+
+    def get_attack(self):
+        return self.attack + self.mod_stats[0]
+
+    def get_mana(self):
+        return self.mana_cost + self.mod_stats[2]
+
     def take_damage(self, damage):
         #  Not sure if necessary to check divine shield and reborn in every take_damage.
         #  Maybe find better implementation. Should probably put active abilities in a separate attribute anyway.
