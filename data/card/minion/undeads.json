@@ -9,7 +9,7 @@
       "attack": 1,
       "health": 1,
       "race": "Undead",
-      "ability": "reborn",
+      "ability": ["reborn"],
       "battlecry": [],
       "deathrattle": []
 
