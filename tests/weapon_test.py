@@ -29,7 +29,7 @@ def goblin_vs_gnomes_test():
     # Call end_turn() to set active turn to 1 and mana for each player to 1.
     cw.end_turn()
 
-    while p1.health > 25 and p2.health > 25:
+    while p1.health[0] > 25 and p2.health[0] > 25:
         cw.draw_card(1)
         # cw.draw_card(2)
         # cw.draw_card(2)
