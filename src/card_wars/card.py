@@ -58,10 +58,10 @@ class Minion(Card):
 
         if damage > 0:
             self.health[0] -= damage
-            if self.health[0] <= 0:
+            if self.get_health()[0] <= 0:
                 log(f"{self.name} died while taking {damage} damage.")
             else:
-                log(f"{self.name} took {damage} damage. Now at {self.health[0]} HP")
+                log(f"{self.name} took {damage} damage. Now at {self.get_health()[0]} HP")
 
         if "reborn" in self.ability and self.health[0] <= 0:
             self.ability.remove("reborn")
@@ -69,25 +69,25 @@ class Minion(Card):
             log(f"{self.name} was reborn with [{self.attack}/{self.health[0]}]")
 
     def attack_target(self, target, attack_mod=0):
-        atk_val = self.attack + attack_mod
+        atk_val = self.get_attack() + attack_mod
         if atk_val <= 0:
             return
 
         if isinstance(target, Minion):
-            attacking = f"{self.name} [{atk_val}/{self.health[0]}]"
-            attacked = f"{target.name} [{target.attack}/{target.health[0]}]"
+            attacking = f"{self.name} [{atk_val}/{self.get_health()[0]}]"
+            attacked = f"{target.name} [{target.get_attack()}/{target.get_health()[0]}]"
             log(f"{attacking} attacks {attacked}")
 
             target.take_damage(atk_val)
-            self.take_damage(target.attack)
+            self.take_damage(target.get_attack())
 
         else:
             target.take_damage(atk_val)
             log(f"{self.name} attacks {target.name} for {atk_val} damage.")
 
     def heal(self, value):
-        old = self.health[0]
-        new = min(old + value, self.health[1])
+        old = self.get_health()[0]
+        new = min(old + value, self.get_health()[1])
         self.health[0] = new
         log(f"{self.name} was healed for {new - old}.")
 
@@ -156,7 +156,7 @@ class Minion(Card):
         )
 
     def __str__(self):
-        str = f"{self.name} [{self.attack}/{self.health[0]}] Mana: {self.mana_cost}"
+        str = f"{self.name} [{self.get_attack()}/{self.get_health()[0]}] Mana: {self.get_mana()}"
         if self.card_text != "":
             str += f"\n{self.card_text}"
         return str
