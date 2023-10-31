@@ -73,6 +73,9 @@ class Board:
 
     max_field_minion: int = 7
 
+    # Both check_board_buffs and apply_board_buffs are still kinda clunky.
+    # They work, but yeah, but should try to refactor + also need to impl new buffs
+
     def check_board_buffs(self, player_field):
         """Called through update_board in FieldList"""
         minions_on_field = [minion for minion in player_field]
