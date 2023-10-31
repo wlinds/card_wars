@@ -325,7 +325,6 @@
           "type": "board_buff",
           "target": "friendly",
           "target_race": "Dragon",
-          "attack": 0,
           "health": 2
         },
         {"type": "not_board_buff",
