@@ -397,5 +397,27 @@
         }
       ]
 
+    },
+
+    {
+      "card_id": "mdem002",
+      "card_type": "minion",
+      "name": "Mana Muncher",
+      "description": "",
+      "card_text": "Battlecry: Destroy your mana crystals, gain +1/+1 for each.",
+      "mana_cost": 2,
+      "attack": 1,
+      "health": 1,
+      "race": "Demon",
+      "ability": [],
+      "battlecry": [
+        {
+          "type": "mana_burn",
+          "effect": "buff",
+          "attack": 1,
+          "health": 1,
+          "target": "self"
+        }
+      ]
     }
 ]
