@@ -90,6 +90,7 @@ class GameSession:
             p.update_active_mana()
         log(f"Turn {self.game_turn} ended.")
 
+    # TODO simplify this (move to new script)
     def get_player(self, player_num):
         """Returns player, player_hand, player_field, opponent_field, player_graveyard"""
         p = self.player1 if player_num == 1 else self.player2
@@ -99,6 +100,7 @@ class GameSession:
         pg = self.board.p1_grave if player_num == 1 else self.board.p2_grave
         return p, ph, pf, of, pg
 
+    # TODO simplify this, refactor, better var names (move to new script)
     def check_battlecry(self, card_to_play, player_num, select_target=None):
         player, player_hand, player_field, opponent_field, _ = self.get_player(player_num)
 
@@ -179,8 +181,37 @@ class GameSession:
             if isinstance(buff, dict) and buff.get("type") == "summon":
                 self.board.add_to_field(find_card(buff.get("card_id")), player_num)
 
+            # Check for mana_burn
+            if isinstance(buff, dict) and buff.get("type") == "mana_burn":
+                if buff.get("target") == "self" and buff.get("effect") == "buff":
+                    card_to_play.attack += buff.get("attack") * player.mana_bar
+
+                    # Updating health twice like this is tedious, should fix TODO
+                    card_to_play.health[0] += player.mana_bar * buff.get("health")
+                    card_to_play.health[1] += player.mana_bar * buff.get("health")
+
+                else:
+                    # TODO Cards that target enemies here
+                    pass
+
+                # Reset mana bar
+                player.mana_bar = 0
+                # Account for cost of playing card
+                player.active_mana = card_to_play.get_mana()
+
+        #         {
+        #   "type": "burn_mana",
+        #   "effect": "buff",
+        #   "attack": 1,
+        #   "health": 1,
+        #   "repeat": "mana_bar",
+        #   "target": "self"
+        # }
+
         self.remove_dead_minions(1)
         self.remove_dead_minions(2)
+
+        return card_to_play
 
     def play_card(self, player_num, card_index, select_target=None):  # Select target TODO
         """
@@ -220,7 +251,9 @@ class GameSession:
                         f"[{card_to_play.attack}/{card_to_play.health[0]}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
                     )
 
-                    self.check_battlecry(card_to_play, player_num, select_target)
+                    card_to_play = self.check_battlecry(card_to_play, player_num, select_target)
+                    print("aaa")
+                    print(card_to_play)
 
                     player_field.append(card_to_play, self.board)
 
