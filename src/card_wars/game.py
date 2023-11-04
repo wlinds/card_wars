@@ -103,6 +103,16 @@ class GameSession:
         player, player_hand, player_field, opponent_field, _ = self.get_player(player_num)
 
         for buff in card_to_play.battlecry:
+            # Check for merge
+            if isinstance(buff, dict) and buff.get("type") == "merge":
+                target = buff.get("target")
+                if target == "friendly":
+                    print("merging")
+                    print(card_to_play, select_target)
+                    card_to_play += select_target
+                    player_field.remove(select_target, self.board)
+                    return card_to_play
+
             # Check for deal_damage battlecry
             if isinstance(buff, dict) and buff.get("type") == "deal_damage":
                 value, target = buff.get("value"), buff.get("target")
@@ -182,6 +192,8 @@ class GameSession:
         self.remove_dead_minions(1)
         self.remove_dead_minions(2)
 
+        return card_to_play
+
     def play_card(self, player_num, card_index, select_target=None):  # Select target TODO
         """
         Play a card from hand onto Board.
@@ -220,7 +232,7 @@ class GameSession:
                         f"[{card_to_play.attack}/{card_to_play.health[0]}] Mana: {card_to_play.mana_cost} {card_to_play.card_text}"
                     )
 
-                    self.check_battlecry(card_to_play, player_num, select_target)
+                    card_to_play = self.check_battlecry(card_to_play, player_num, select_target)
 
                     player_field.append(card_to_play, self.board)
 
