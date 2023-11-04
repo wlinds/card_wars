@@ -1,0 +1,22 @@
+[
+    {
+      "card_id": "msli000",
+      "card_type": "minion",
+      "name": "Slime",
+      "description": "A very sticky blob.",
+      "card_text": "Battlecry: Merge with a friendly minion.",
+      "mana_cost": 1,
+      "attack": 1,
+      "health": 1,
+      "race": "Slime",
+      "ability": "",
+      "battlecry": [
+        {
+          "type": "merge",
+          "target": "friendly"
+        }
+      ],
+      "deathrattle": []
+
+    }
+]
