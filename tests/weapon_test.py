@@ -30,7 +30,7 @@ def goblin_vs_gnomes_test():
     cw.end_turn()
 
     while p1.health[0] > 25 and p2.health[0] > 25:
-        cw.draw_card(1)
+        p1.draw_card()
         # cw.draw_card(2)
         # cw.draw_card(2)
         # cw.draw_card(2)

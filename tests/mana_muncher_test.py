@@ -31,6 +31,12 @@ def main():
 
     print(cw)
 
+    cw.player1.add_to_hand(find_card("sneu001"))
+    cw.play_card(1, 0)
+
+    print(cw)
+    print(cw.board)
+
 
 if __name__ == "__main__":
     main()
