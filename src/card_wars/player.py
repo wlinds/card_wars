@@ -57,10 +57,12 @@ class Player(Minion):
             self.max_health,
         )  # Probably not necessary, just update default
 
+    def get_hand(self):
+        return [i.name for i in self.hand]
+
     def draw_card(self):
         """
         Draw a card from deck and add it to hand.
-        player_num: 1 or 2 to indicate which player is drawing.
         """
 
         if not self.deck.cards:
@@ -81,7 +83,7 @@ class Player(Minion):
         else:
             log(f"{self.player.name} drew {drawn_card}")
 
-        self.add_to_hand(self.hand)
+        self.add_to_hand(drawn_card)
 
     def add_to_hand(self, card):
         """Add a copy of any card to player hand."""
