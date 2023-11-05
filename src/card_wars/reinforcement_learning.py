@@ -10,25 +10,21 @@ from player import Player
 
 
 def game_simulation(p1):
-    # This is the deck p1 should win against (random goblin deck)
+    # Semi-static deck generated from cards from same bucket
     p2 = Player(name="P2 Classic Deck", deck=get_test_deck())
-
-    # Shuffle both deck for random order
-    p1.deck.shuffle()
-    p2.deck.shuffle()
     cw = GameSession(p1, p2, Board())
-    cw.draw_starting_cards()
-    cw.end_turn()
+    cw.start_game()
 
-    while p1.health > 0 and p2.health > 0:
-        cw.draw_card(1)
-        cw.draw_card(2)
+    # Game loop while both player are alive
+    while p1.health[0] > 0 and p2.health[0] > 0:
+        p1.draw_card()
+        p2.draw_card()
 
         # TODO better implementation of which card to play
         # TODO basic logic, also get hand length and evaluate cards in hand for play or not play
 
         get_active_mana = p1.active_mana
-        cards_on_hand = cw.player1_hand
+        cards_on_hand = p1.hand
         if cards_on_hand != []:
             for card in cards_on_hand:
                 #  TODO Implement card evaluation
@@ -39,7 +35,7 @@ def game_simulation(p1):
                 #  TODO Optimize mana curve. Punish unspent mana. Reward well spent mana.
 
         get_active_mana = p2.active_mana
-        cards_on_hand = cw.player2_hand
+        cards_on_hand = p2.hand
         if cards_on_hand != []:
             for card in cards_on_hand:
                 # Implement card evaluation
@@ -48,19 +44,16 @@ def game_simulation(p1):
                     cw.play_card(2, idx)
 
         if cw.player1.weapon != None:
-            target = cw.target_assist(1, all_random=False, all_enemy=True)
-
-            cw.player1.attack_target(random.choice(target))
+            target = cw.target_assist2(player_num=1, allow_friendly=False)
+            cw.player1.attack_target(target)
 
         if cw.player2.weapon != None:
-            target = cw.target_assist(2, all_random=False, all_enemy=True)
+            target = cw.target_assist2(player_num=2, allow_friendly=False)
             cw.player2.attack_target(random.choice(target))
 
         cw.attack_phase()
 
-    # print(cw)
-    # print(cw.board)
-    if p1.health > 0:
+    if p1.health[0] > 0:
         return 1
     return 0
 
@@ -112,7 +105,7 @@ def main(file_path):
         df = pd.DataFrame(columns=["generation", "deck_uid", "win_rate"])
 
     for generation in range(num_generations):
-        for _ in range(2):
+        for _ in range(3200):
             # Full random start:
             deck_string = "".join(random.choices(uid_bucket, k=30))
 
@@ -141,9 +134,6 @@ def main(file_path):
 
 
 if __name__ == "__main__":
-    df = main(file_path="data/results/goblin_vs_random_2_allow_player_attack.csv")
+    df = main(file_path="data/results/goblin_vs_random_4_handle_spells_poorly_32k.csv")
     print(df)
     print(df["win_rate"].mean())
-    print("Top 5 best performing deck:")
-    top_5_decks = df.nlargest(5, "win_rate")
-    print(top_5_decks)
