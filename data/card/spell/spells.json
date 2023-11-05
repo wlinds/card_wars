@@ -1,5 +1,27 @@
 [
     {
+      "card_id": "sneu000",
+      "card_type": "spell",
+      "name": "Coin",
+      "description": "Get 1 mana crystal.",
+      "mana_cost": 0,
+      "spell_type": "Neutral",
+      "target": 0,
+      "damage": 0
+    },
+
+    {
+      "card_id": "sneu001",
+      "card_type": "spell",
+      "name": "Shadowstep",
+      "description": "Return a friendly minion to your hand.",
+      "mana_cost": 0,
+      "spell_type": "Neutral",
+      "target": 0,
+      "damage": 0
+    },
+
+    {
       "card_id": "sfir000",
       "card_type": "spell",
       "name": "Fire Blast",
