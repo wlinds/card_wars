@@ -18,16 +18,6 @@ class GameSession:
     board: Board
     game_turn: int = 0
 
-    def add_to_hand(self, player_num, card):  # Has been migrated to Player class
-        """Add a copy of any card to player hand."""
-        player, player_hand, _, _, _ = self.get_player(player_num)
-
-        if card is not None:
-            if len(player_hand) < player.max_hand_size:
-                player_hand.append(card)
-            else:
-                log(f"Hand full! {card.name} was discarded.")
-
     def draw_starting_cards(self, n=3):
         for player in [self.player1, self.player2]:
             for _ in range(n):
@@ -67,6 +57,8 @@ class GameSession:
 
         all_targets = []
 
+        log("No target was specified! Target Assist running.")
+
         if allow_minion:
             if allow_friendly:
                 if allow_race == "all":
@@ -85,18 +77,19 @@ class GameSession:
             if allow_enemy:
                 all_targets.append(self.player2 if player == self.player1 else self.player1)
 
-        if not return_all:
-            selected_target = random.choice(all_targets)
-
-            if selected_target:
-                log(f"[Target Assist running] Selected target: {selected_target.name}.")
+        if all_targets != []:
+            if not return_all:
+                selected_target = random.choice(all_targets)
+                log(f"[Target Assist] Selected target: {selected_target.name}.")
                 return selected_target
+
             else:
-                log("No target found!")
+                log(f"[Target Assist] Returning {len(all_targets)} targets.")
+                return all_targets
 
         else:
-            log(f"[Target Assist running] Found {len(all_targets)} targets.")
-            return all_targets
+            log("No target found!")
+            return None
 
     # TODO simplify this (move to new script (?))
     def get_player(self, player_num):
@@ -200,7 +193,7 @@ class GameSession:
                     target = random.choice(minion_pool)
                     target = target.card_id
 
-                self.add_to_hand(player_num, find_card(target))
+                player.add_to_hand(find_card(target))
                 log(f"{find_card(target).name} added to P{player_num}'s hand")
 
             # Check for buff_summon
@@ -238,6 +231,7 @@ class GameSession:
         """
 
         player, player_hand, player_field, opponent_field, graveyard = self.get_player(player_num)
+        log(f"{player.name} attempts to play {player.hand[card_index].name}")
 
         # Allow selecting card by index in hand
         if isinstance(card_index, int):
@@ -297,27 +291,69 @@ class GameSession:
         else:
             print("No card at selected index.")
 
-    def cast_spell(self, player_num, card, target=None):
+    # TODO This needs to be streamlined. Can't handle every case of every spell card.
+    def cast_spell(self, player_num, card, select_target=None):
         player, player_hand, player_field, opponent_field, graveyard = self.get_player(player_num)
 
         # No target needed
-        if card.card_id == "sneu00":
-            player.active_mana += 1
+        if card.target == "none":
+            # Always target self
+            if card.card_id == "sneu000":
+                player.active_mana += 1
+                log(f"{player.name} cast {card.name}.")
+                log(f"{player.name} received 1 mana")
 
-        # Friendly targets
-        if target == None:
-            selected_target = self.target_assist2(player_num, allow_player=False, allow_enemy=False)
+            if card.card_id == "snat000":
+                player.max_mana_bar += 1
+                player.mana_bar += 1
+                log(f"{player.name} cast {card.name}.")
+                log(f"{player.name} received 2 mana")
 
-        if card.card_id == "sneu001":
-            self.add_to_hand(player_num, selected_target)
-            player_field.remove(selected_target, self.board)
+            # Always target all enemy minion
+            if card.card_id == "sfro000":
+                auto_target = self.target_assist2(
+                    player_num, allow_enemy=True, allow_player=False, return_all=True
+                )
+                if auto_target == None:
+                    print("Good job playing AoE on an empty opponent board.")
+                    return
+                for entity in auto_target:
+                    entity.take_damage(card.damage)
 
-        log(f"Player {player_num} cast {card.name} on {selected_target.name}")
+        # Friendly minion targets
+        if card.target == "friendly minion":
+            if select_target == None:
+                # Roll for any friendly minion
+                select_target = self.target_assist2(
+                    player_num, allow_player=False, allow_enemy=False
+                )
+                if select_target == None:
+                    print(f"Cannot play {card.name} without a target.")
+                    return "unplayable"
 
-        if card.card_id == "sfro000":
-            target = self.target_assist2(player_num, allow_enemy=True, return_all=True)
-            for entity in target:
-                entity.take_damage(card.damage)
+            if card.card_id == "sneu001":
+                player.add_to_hand(select_target)
+                player_field.remove(select_target, self.board)
+
+            if card.card_id == "sund000":
+                select_target.health[0] += 1
+                select_target.health[1] += 1
+                select_target.attack += 1
+
+        # Any target
+        if card.target == "any":
+            if select_target == None:
+                # Roll for any target (including both players)
+                select_target = self.target_assist2(player_num)
+                if select_target == None:
+                    print(f"Cannot play {card.name} without a target.")
+                    return "unplayable"
+
+            if card.card_id == "sfir000":
+                select_target.take_damage(card.damage)
+
+        if select_target:
+            log(f"Player {player_num} cast {card.name} on {select_target.name}")
 
             self.remove_dead_minions(1)
             self.remove_dead_minions(2)
