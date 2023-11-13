@@ -23,19 +23,19 @@ def main():
     cw.player1.active_mana = 100
     cw.player2.active_mana = 100
 
-    cw.add_to_hand(1, find_card("mneu000"))
-    cw.add_to_hand(2, find_card("mneu000"))
+    cw.player1.add_to_hand(find_card("mneu000"))
+    cw.player2.add_to_hand(find_card("mneu000"))
 
     print(cw.player1.hand[-1])
     cw.play_card(1, -1)
     cw.play_card(1, 0, cw.board.p1_field[0])
 
-    cw.add_to_hand(1, find_card("mneu000"))
-    cw.add_to_hand(1, find_card("mneu000"))
+    cw.player1.add_to_hand(find_card("mneu000"))
+    cw.player2.add_to_hand(find_card("mneu000"))
     cw.play_card(1, -1)
     cw.play_card(1, -1)
 
-    cw.play_card(1, 0, cw.board.p1_field[2])
+    cw.play_card(1, 0, cw.board.p1_field[1])
 
     print(f"field={cw.board.p1_field[0]}")
     print(cw.board)
