@@ -170,7 +170,7 @@ class Minion(Card):
 @dataclass
 class Spell(Card):
     spell_type: str = "Default"
-    target: int = 0
+    target: str = "all"
     damage: int = 0
 
 
