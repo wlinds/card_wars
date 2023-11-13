@@ -1,12 +1,37 @@
 [
     {
+      "card_id": "sneu000",
+      "card_type": "spell",
+      "name": "Coin",
+      "card_text": "Gain 1 Mana Crystal this turn only ",
+      "description": "Shiny!",
+      "mana_cost": 0,
+      "spell_type": "Neutral",
+      "target": "none",
+      "damage": 0
+    },
+
+    {
+      "card_id": "sneu001",
+      "card_type": "spell",
+      "name": "Shadowstep",
+      "card_text": "Return a friendly minion to your hand",
+      "description": "",
+      "mana_cost": 0,
+      "spell_type": "Neutral",
+      "target": "friendly minion",
+      "damage": 0
+    },
+
+    {
       "card_id": "sfir000",
       "card_type": "spell",
       "name": "Fire Blast",
+      "card_text": "Deal 6 damage.",
       "description": "A furious fireball.",
       "mana_cost": 2,
       "spell_type": "Fire",
-      "target": 0,
+      "target": "any",
       "damage": 6
     },
 
@@ -14,10 +39,11 @@
       "card_id": "sfro000",
       "card_type": "spell",
       "name": "Frost Nova",
+      "card_text": "Deal 2 damage to all enemy minions",
       "description": "AoE.",
       "mana_cost": 4,
       "spell_type": "Frost",
-      "target": 1,
+      "target": "none",
       "damage": 2
 
     },
@@ -26,10 +52,11 @@
       "card_id": "snat000",
       "card_type": "spell",
       "name": "Wild Growth",
-      "description": "Increases player mana by 2",
+      "card_text": "Gain an empty Mana Crystal",
+      "description": "Unlimited powa",
       "mana_cost": 0,
       "spell_type": "nature",
-      "target": 4,
+      "target": "none",
       "damage": 0
     },
 
@@ -37,7 +64,8 @@
       "card_id": "sund000",
       "card_type": "spell",
       "name": "Bone",
-      "description": "Give a friendly minion +1/+1",
+      "card_text": "Give a friendly minion +1/+1",
+      "description": "",
       "mana_cost": 0,
       "spell_type": "undead",
       "target": "friendly minion",

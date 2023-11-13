@@ -7,7 +7,7 @@
       "card_text": "",
       "mana_cost": 1,
       "attack": 2,
-      "health": 2,
+      "health": 1,
       "race": "Goblin",
       "ability": "",
       "battlecry": [],
@@ -87,7 +87,7 @@
       "name": "Goblin Gambler",
       "description": "",
       "card_text": "Battlecry: Draw a card.",
-      "mana_cost": 1,
+      "mana_cost": 2,
       "attack": 1,
       "health": 1,
       "race": "Goblin",
@@ -107,10 +107,10 @@
       "card_type": "minion",
       "name": "Goblin Necromancer",
       "description": "",
-      "card_text": "Deathrattle: Summon a 2/2 Goblin.",
+      "card_text": "Deathrattle: Summon a 2/1 Goblin.",
       "mana_cost": 2,
-      "attack": 2,
-      "health": 2,
+      "attack": 1,
+      "health": 1,
       "race": "Goblin",
       "ability": "",
       "battlecry": [],
@@ -124,12 +124,12 @@
     },
 
     {
-      "card_id": "mgob005",
+      "card_id": "mgob006",
       "card_type": "minion",
       "name": "Goblin Shaman",
       "description": "",
       "card_text": "Battlecry: Restore 2 health to all friendly characters.",
-      "mana_cost": 2,
+      "mana_cost": 3,
       "attack": 2,
       "health": 2,
       "race": "Goblin",
@@ -147,12 +147,12 @@
     },
 
     {
-      "card_id": "mgob006",
+      "card_id": "mgob007",
       "card_type": "minion",
       "name": "Goblin Wingman",
       "description": "",
       "card_text": "Battlecry: Add a random Goblin to your hand.",
-      "mana_cost": 3,
+      "mana_cost": 4,
       "attack": 3,
       "health": 2,
       "race": "Goblin",
@@ -175,7 +175,7 @@
       "card_text": "",
       "mana_cost": 1,
       "attack": 1,
-      "health": 1,
+      "health": 2,
       "race": "Gnome",
       "ability": "",
       "battlecry": [],
@@ -249,7 +249,7 @@
       "name": "Grand Gnome",
       "description": "The grandest gnome of them all.",
       "card_text": "Battlecry: Give a friendly minion +2/+2 and add a Frost Nova to your hand.",
-      "mana_cost": 5,
+      "mana_cost": 6,
       "attack": 6,
       "health": 7,
       "race": "Gnome",
@@ -325,7 +325,6 @@
           "type": "board_buff",
           "target": "friendly",
           "target_race": "Dragon",
-          "attack": 0,
           "health": 2
         },
         {"type": "not_board_buff",
@@ -352,7 +351,6 @@
       "deathrattle": []
 
     },
-
 
     {
       "card_id": "mdem000",
@@ -399,5 +397,27 @@
         }
       ]
 
+    },
+
+    {
+      "card_id": "mdem002",
+      "card_type": "minion",
+      "name": "Mana Muncher",
+      "description": "",
+      "card_text": "Battlecry: Destroy your mana crystals, gain +1/+1 for each.",
+      "mana_cost": 2,
+      "attack": 1,
+      "health": 1,
+      "race": "Demon",
+      "ability": [],
+      "battlecry": [
+        {
+          "type": "mana_burn",
+          "effect": "buff",
+          "attack": 1,
+          "health": 1,
+          "target": "self"
+        }
+      ]
     }
 ]

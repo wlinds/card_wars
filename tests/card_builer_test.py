@@ -32,10 +32,10 @@ def card_build_test():
 
     cards_to_play = []
 
-    for i in range(len(cw.player2_hand)):
-        print((cw.player2_hand[i].card_id))
+    for i in range(len(cw.player2.hand)):
+        print((cw.player2.hand[i].card_id))
 
-    print(len(cw.player1_hand))
+    print(len(cw.player1.hand))
 
     # # While loop until one player wins
     # while p1.health > 0 and p2.health > 0:

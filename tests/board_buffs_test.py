@@ -18,7 +18,7 @@ def main():
 
     cw.draw_starting_cards(10)
 
-    print(cw.player1_hand[0])
+    print(p1.hand[0])
 
     cw.end_turn()
 
@@ -38,6 +38,13 @@ def main():
 
     print(cw)
     print(cw.board)
+    print(cw.board.p1_field[0].mod_stats)
+    print(cw.board.p2_field[0].mod_stats)
+
+    cw.play_card(1, 0)
+
+    print(cw.board.p1_field[0].mod_stats)
+    print(cw.board.p2_field[0].mod_stats)
 
 
 if __name__ == "__main__":

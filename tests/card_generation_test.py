@@ -29,9 +29,9 @@ def goblin_vs_gnomes_test():
 
     print(cw)
     print(cw.board)
-    for minion in cw.player1_hand:
+    for minion in cw.player1.hand:
         print(minion.name)
-    for minion in cw.player2_hand:
+    for minion in cw.player2.hand:
         print(minion.name)
 
 

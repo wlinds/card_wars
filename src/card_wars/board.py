@@ -11,16 +11,21 @@ log = logs.logger.info
 
 
 # Overloaded list to update board state whenever list of minion on board changes
+# Each player has their own FieldList. This is the home of their minions on board.
+
+
 class FieldList(list):
-    def __init__(self, *args, field_name="Default Field", **kwargs):
+    def __init__(self, *args, field_name="Default Player Field", **kwargs):
         self.field_name = field_name
         super().__init__(*args, **kwargs)
 
+    # Not sure if we need to do this, instead we check all minion on both
     def update_board(self, board):
         if self is board.p1_field:
-            board.check_board_buffs(self)
+            print("debug - calling check_board_buffs on p1_field")
         elif self is board.p2_field:
-            board.check_board_buffs(self)
+            print("debug - calling check_board_buffs on p2_field")
+        board.check_board_buffs(self)
 
     def append(self, item, board):
         if not isinstance(item, Minion):
@@ -68,6 +73,9 @@ class Board:
 
     max_field_minion: int = 7
 
+    # Both check_board_buffs and apply_board_buffs are still kinda clunky.
+    # They work, but yeah, but should try to refactor + also need to impl new buffs
+
     def check_board_buffs(self, player_field):
         """Called through update_board in FieldList"""
         minions_on_field = [minion for minion in player_field]
@@ -80,7 +88,7 @@ class Board:
         board_buff_list = []
 
         for minion in minions_on_field:
-            board_buff_list = [
+            board_buff_list += [
                 ability
                 for ability in minion.ability
                 if isinstance(ability, dict) and ability.get("type") == "board_buff"
@@ -90,7 +98,7 @@ class Board:
 
     def apply_board_buffs(self, player_field, board_buff_list):
         # Reset buff stats for all minion to avoid duplicate buffs
-        for minion in self.p1_field + self.p2_field:
+        for minion in player_field:
             minion.mod_stats = [0, 0, 0]
 
         target_field = self.p1_field if player_field == self.p2_field else self.p2_field
@@ -163,7 +171,7 @@ class Board:
             return "Board is empty."
 
         def format_minions(minions):
-            return ", ".join([f"{m.name} [{m.attack}/{m.health[0]}]" for m in minions])
+            return ", ".join([f"{m.name} [{m.get_attack()}/{m.get_health()[0]}]" for m in minions])
 
         board_str = "Minions on board:\n"
         p1_field = format_minions(self.p1_field)
