@@ -231,7 +231,6 @@ class GameSession:
         """
 
         player, player_hand, player_field, opponent_field, graveyard = self.get_player(player_num)
-        log(f"{player.name} attempts to play {player.hand[card_index].name}")
 
         # Allow selecting card by index in hand
         if isinstance(card_index, int):
@@ -244,10 +243,15 @@ class GameSession:
                 return
 
             card_to_play = player_hand[card_index]
+            log(f"{player.name} attempts to play {player.hand[card_index].name}")
 
         # Allow selecting card by any minion (debug)
-        if isinstance(card_index, Card):
+        elif isinstance(card_index, Minion):
+            log(f"DEBUG {player.name} attempts to play {card_index.name}")
             card_to_play = card_index
+
+        else:
+            print("Invalid card selection.")
 
         if isinstance(card_to_play, Minion) and len(player_field) >= self.board.max_field_minion:
             print(f"Cannot play {card_to_play.name}. Board is full!")
