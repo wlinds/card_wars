@@ -16,6 +16,10 @@ class Deck:
     cards: List[Card] = field(default_factory=list)
     copies_allowed: int = 30
 
+    def __post_init__(self):
+        if self.card_limit is None:
+            self.card_limit = 9999
+
     def add_card(self, card: Union[str, Card]):
         """
         Add a copy of any card to deck card list.

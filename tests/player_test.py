@@ -21,7 +21,7 @@ class TestPlayerConstructor(unittest.TestCase):
         self.assertEqual(p1.active_mana, 10)
 
         p2.take_damage(1)
-        self.assertEqual(p2.health, p2.max_health - 1)
+        self.assertEqual(p2.health[0], p2.max_health - 1)
 
 
 if __name__ == "__main__":
