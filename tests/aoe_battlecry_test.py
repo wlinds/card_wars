@@ -7,9 +7,10 @@ from card_wars.game import GameSession
 from card_wars.import_cards import find_card
 from card_wars.player import Player
 
+# Assert AoE battlecries (damage all enemy minion and heal all friendly characters) function
+
 
 class TestAOEBattlecry(unittest.TestCase):
-    @logs.game_state
     def test_aoe(self):
         p1 = Player(name="Xx_Dragonlord_xX", deck=Deck())
         p2 = Player(name="Bobby", deck=Deck())
